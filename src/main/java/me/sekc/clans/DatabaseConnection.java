@@ -28,7 +28,8 @@ public class DatabaseConnection {
         connection.createStatement().executeUpdate(
                 "CREATE TABLE IF NOT EXISTS players ("
                         + "   uuid           VARCHAR(36) NOT NULL PRIMARY KEY,"
-                        + "   experience     INTEGER NOT NULL DEFAULT 0"
+                        + "   experience     INTEGER NOT NULL DEFAULT 0,"
+                        + "   clan           VARCHAR(32)" // foreign key to clan table
                         + ")"
         );
     }
@@ -113,6 +114,59 @@ public class DatabaseConnection {
             stmt.setString(1, playerUUID.toString());
             ResultSet results = stmt.executeQuery();
             return results.isBeforeFirst(); // false if empty
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int getPlayerExperience(UUID playerUUID) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT experience FROM players WHERE uuid=?"
+            );
+            stmt.setString(1, playerUUID.toString());
+            ResultSet results = stmt.executeQuery();
+            return results.getInt("experience");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setPlayerExperience(UUID playerUUID, int experience) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "UPDATE players SET experience=? WHERE uuid=?"
+            );
+            stmt.setInt(1, experience);
+            stmt.setString(2, playerUUID.toString());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getPlayerClan(UUID playerUUID) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT clan FROM players WHERE uuid=?"
+            );
+            stmt.setString(1, playerUUID.toString());
+            ResultSet results = stmt.executeQuery();
+            String clan = results.getString("clan");
+            return clan == null ? "" : null;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setPlayerClan(UUID playerUUID, String clan) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "UPDATE players SET clan=? WHERE uuid=?"
+            );
+            stmt.setString(1, clan);
+            stmt.setString(2, playerUUID.toString());
+            stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

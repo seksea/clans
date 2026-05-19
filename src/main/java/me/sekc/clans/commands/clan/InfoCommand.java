@@ -15,6 +15,8 @@ public class InfoCommand extends BaseCommand {
                         .executes(ctx -> {
                         String clanName = ctx.getArgument("name", String.class);
 
+                        String infoString = "";
+
                         clans.commandResponseInChat(ctx.getSource().getSender(), "<green>=========================================</green>");
                         clans.commandResponseInChat(ctx.getSource().getSender(), "Info for clan <bold>" + clanName + "</bold>:");
                         clans.commandResponseInChat(ctx.getSource().getSender(),  "<grey>-----------------------------------------</grey>");
