@@ -8,6 +8,8 @@ import io.papermc.paper.command.brigadier.Commands;
 import me.sekc.clans.Clans;
 import me.sekc.clans.commands.BaseCommand;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class NewCommand extends BaseCommand {
@@ -19,17 +21,18 @@ public class NewCommand extends BaseCommand {
                     UUID ownerUUID = ctx.getSource().getExecutor().getUniqueId();
 
                     if (!clans.databaseConnection.getPlayerClan(ownerUUID).isEmpty()) {
-                        clans.commandResponseInChat(ctx.getSource().getSender(), "Can't create clan as you are already in another clan, use <bold>/clan leave</bold> first.");
+                        clans.commandResponseInChat(ctx.getSource(), "commands.new.already-in-clan", null);
                         return Command.SINGLE_SUCCESS;
                     }
-
-                    clans.commandResponseInChat(ctx.getSource().getSender(), "Creating new clan <bold>" + clanName + "</bold>.");
 
                     clans.databaseConnection.createNewClan(clanName, ownerUUID);
                     // set the owner of the clan to be a member of the clan
                     clans.databaseConnection.setPlayerClan(ownerUUID, clanName);
 
-                    clans.commandResponseInChat(ctx.getSource().getSender(), "Created new clan <bold>" + clanName + "</bold>!");
+                    clans.commandResponseInChat(ctx.getSource(), "commands.new.created-new-clan",
+                            Map.ofEntries(
+                                    Map.entry("%clan_name%", clanName)
+                            ));
 
                     return Command.SINGLE_SUCCESS;
                 })

@@ -14,6 +14,8 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class InfoCommand extends BaseCommand {
@@ -25,18 +27,20 @@ public class InfoCommand extends BaseCommand {
                     UUID playerUUID = ctx.getSource().getExecutor().getUniqueId();
 
                     if (clans.databaseConnection.clanExists(clanName)) {
-                        clans.commandResponseInChat(ctx.getSource().getSender(), "Clan <bold>" + clanName + "</bold> does not exist.");
+
+                        clans.commandResponseInChat(ctx.getSource(), "commands.info.not-exist",
+                                Map.ofEntries(Map.entry("%clan_name%", clanName)));
+
                         return Command.SINGLE_SUCCESS;
                     }
 
                     Clans.log(clans.messagesYml.getString("commands.info.info-message"));
 
-                    String infoString = PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(playerUUID),
-                            clans.messagesYml.getString("commands.info.info-message")
-                                    .replace("%clan_name%", clanName)
-                                    .replace("%description%", clans.databaseConnection.getClanDescription(clanName)));
-
-                    clans.commandResponseInChat(ctx.getSource().getSender(), infoString);
+                    clans.commandResponseInChat(ctx.getSource(), "commands.info.info-message",
+                            Map.ofEntries(
+                                    Map.entry("%clan_name%", clanName),
+                                    Map.entry("%clan_description%", clans.databaseConnection.getClanDescription(clanName))
+                            ));
                     return Command.SINGLE_SUCCESS;
                 })
             )

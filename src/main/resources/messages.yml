@@ -1,4 +1,7 @@
 commands:
+  new:
+    already-in-clan: "Can't create clan as you are already in another clan, use <bold>/clan leave</bold> first."
+    created-new-clan: "Created new clan <bold>%clan_name%</bold>."
   info:
     info-message: |
         <green>=========================================</green>
@@ -6,3 +9,7 @@ commands:
         <grey>-----------------------------------------</grey>
         Description: <grey>%clan_description%</grey>
         <green>=========================================</green>
+    not-exist: "Clan <bold>%clan_name%</bold> does not exist."
+  manage:
+    update-var: "Updating <bold>%var_name%</bold> of clan <bold>%clan_name%</bold> to: <grey>%new_value%</grey>"
+    get-var: "Setting <bold>%var_name%</bold> of clan <bold>%clan_name%</bold> is: <grey>%value%</grey>"

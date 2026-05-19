@@ -8,6 +8,8 @@ import io.papermc.paper.command.brigadier.Commands;
 import me.sekc.clans.Clans;
 import me.sekc.clans.commands.BaseCommand;
 
+import java.util.Map;
+
 public class ManageCommand extends BaseCommand {
     static public void register(Clans clans, LiteralArgumentBuilder<CommandSourceStack> root) {
         root.then(Commands.literal("manage")
@@ -18,9 +20,14 @@ public class ManageCommand extends BaseCommand {
                             String clanName = ctx.getArgument("clan_name", String.class);
                             String newDescription = ctx.getArgument("new_description", String.class);
 
-                            clans.commandResponseInChat(ctx.getSource().getSender(), "Updating description of clan <bold>" + clanName + "</bold> to: <grey>" + newDescription + "</grey>");
-
                             clans.databaseConnection.setClanDescription(clanName, newDescription);
+
+                            clans.commandResponseInChat(ctx.getSource(), "commands.manage.update-var",
+                                    Map.ofEntries(
+                                            Map.entry("%var_name%", "description"),
+                                            Map.entry("%clan_name%", clanName),
+                                            Map.entry("%new_value%", newDescription)
+                                    ));
                             return Command.SINGLE_SUCCESS;
                         })
                     )

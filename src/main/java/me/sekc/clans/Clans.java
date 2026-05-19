@@ -7,11 +7,13 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.sekc.clans.commands.CommandManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,6 +22,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.UUID;
 
 public final class Clans extends JavaPlugin {
     public DatabaseConnection databaseConnection;
@@ -83,9 +87,34 @@ public final class Clans extends JavaPlugin {
         messagesYml.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8)));
     }
 
-    public void commandResponseInChat(CommandSender sender, String msg) {
-        sender.sendMessage(
-                MiniMessage.miniMessage().deserialize(chatMessageFormat + "<reset>" + msg));
+    public String getMessageWithPlaceholders(UUID playerUUID, String messageYmlPath, Map<String, String> customPlaceholders) {
+        OfflinePlayer offlinePlayer = null;
+        if (playerUUID != null)
+            offlinePlayer = Bukkit.getOfflinePlayer(playerUUID);
+
+        String original = messagesYml.getString(messageYmlPath);
+
+        if (original == null) {
+            warn("MISSING " + messageYmlPath + " FROM messages.yml");
+            return "MISSING " + messageYmlPath + " FROM messages.yml";
+        }
+
+        if (customPlaceholders != null) {
+            for (Map.Entry<String, String> entry : customPlaceholders.entrySet()) {
+                original = original.replace(entry.getKey(), entry.getValue());
+            }
+        }
+
+
+        return PlaceholderAPI.setPlaceholders(offlinePlayer, original);
+    }
+
+    public void commandResponseInChat(CommandSourceStack source, String messageYmlPath, Map<String, String> customPlaceholders) {
+        source.getSender().sendMessage(
+                MiniMessage.miniMessage().deserialize(
+                        chatMessageFormat + "<reset>" + getMessageWithPlaceholders(source.getExecutor().getUniqueId(), messageYmlPath, customPlaceholders)
+                )
+        );
     }
 
     static public void log(String msg) {
