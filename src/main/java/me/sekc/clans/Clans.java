@@ -13,15 +13,28 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 public final class Clans extends JavaPlugin {
     public DatabaseConnection databaseConnection;
+    public YamlConfiguration messagesYml;
 
     String chatMessageFormat;
 
     @Override
     public void onEnable() {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
+            err("Could not find PlaceholderAPI! This plugin is required, disabling this plugin.");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+
         log("\n" +
                 "   .oooooo.   oooo                                 \n" +
                 "  d8P'  `Y8b  `888                                 \n" +
@@ -39,6 +52,8 @@ public final class Clans extends JavaPlugin {
         saveResource("config.yml", /* replace */ replaceConfigs);
         chatMessageFormat = getConfig().getString("clan-message-format");
 
+        loadMessagesYml(replaceConfigs);
+
         try {
             databaseConnection = new DatabaseConnection(getConfig().getString("database.filepath"));
         } catch (Exception e) {
@@ -53,6 +68,19 @@ public final class Clans extends JavaPlugin {
     @Override
     public void onDisable() {
         log("The clans plugin has been disabled.");
+    }
+
+    public void loadMessagesYml(boolean replaceConfigs) {
+        saveResource("messages.yml", /* replace */ replaceConfigs);
+
+        messagesYml = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "messages.yml"));
+
+        final InputStream defConfigStream = getResource("messages.yml");
+        if (defConfigStream == null) {
+            return;
+        }
+
+        messagesYml.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8)));
     }
 
     public void commandResponseInChat(CommandSender sender, String msg) {

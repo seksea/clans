@@ -9,7 +9,7 @@
 #                                               sekc
 #  ===================================================
 
-# When the plugin responds in chat, how should the message look
+# When the plugin responds in chat, how should the message look?
 clan-message-format: "<grey>[</grey><gradient:#bb88d0:#aa88ff>clans</gradient><grey>]</grey> "
 
 database:

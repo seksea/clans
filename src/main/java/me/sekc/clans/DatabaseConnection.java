@@ -71,7 +71,8 @@ public class DatabaseConnection {
             );
             stmt.setString(1, name);
             ResultSet results = stmt.executeQuery();
-            return results.getString("description");
+            String description = results.getString("description");
+            return description == null ? "" : description;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -153,7 +154,7 @@ public class DatabaseConnection {
             stmt.setString(1, playerUUID.toString());
             ResultSet results = stmt.executeQuery();
             String clan = results.getString("clan");
-            return clan == null ? "" : null;
+            return clan == null ? "" : clan;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

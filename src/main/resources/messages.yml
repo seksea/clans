@@ -1,0 +1,8 @@
+commands:
+  info:
+    info-message: |
+        <green>=========================================</green>
+        Info for clan <bold>%clan_name%</bold>:
+        <grey>-----------------------------------------</grey>
+        Description: <grey>%clan_description%</grey>
+        <green>=========================================</green>
