@@ -46,6 +46,8 @@ public final class Clans extends JavaPlugin {
         }
 
         CommandManager.registerCommands(this);
+
+        getServer().getPluginManager().registerEvents(new EventListener(this), this);
     }
 
     @Override

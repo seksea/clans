@@ -14,7 +14,10 @@ public class NewCommand extends BaseCommand {
                 .then(Commands.argument("name", StringArgumentType.word())
                         .executes(ctx -> {
                         String clanName = ctx.getArgument("name", String.class);
+
                         clans.commandResponseInChat(ctx.getSource().getSender(), "Creating new clan <bold>" + clanName + "</bold>.");
+
+                        clans.databaseConnection.createNewClan(clanName, ctx.getSource().getExecutor().getUniqueId());
                         return Command.SINGLE_SUCCESS;
                     })
                 )
