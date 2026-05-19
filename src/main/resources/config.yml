@@ -1,0 +1,16 @@
+#     .oooooo.   oooo
+#    d8P'  `Y8b  `888
+#   888           888   .oooo.   ooo. .oo.    .oooo.o
+#   888           888  `P  )88b  `888P"Y88b  d88(  "8
+#   888           888   .oP"888   888   888  `"Y88b.
+#   `88b    ooo   888  d8(  888   888   888  o.  )88b
+#    `Y8bood8P'  o888o `Y888""8o o888o o888o 8""888P'
+#                  The ultimate clan+leveling plugin
+#                                               sekc
+#  ===================================================
+
+# When the plugin responds in chat, how should the message look
+clan-message-format: "<grey>[</grey><gradient:#bb88d0:#aa88ff>clans</gradient><grey>]</grey> "
+
+database:
+  filepath: "jdbc:sqlite:plugins/clans/database.db"

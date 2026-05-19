@@ -1,0 +1,9 @@
+name: clans
+description: $description
+version: '${version}'
+
+main: me.sekc.clans.Clans
+api-version: '26.1.2'
+load: POSTWORLD
+
+authors: [ sekc ]
