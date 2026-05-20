@@ -6,6 +6,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import me.sekc.clans.Clans;
 import me.sekc.clans.commands.BaseCommand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -39,6 +40,11 @@ public class DeleteCommand extends BaseCommand {
 
                 return Command.SINGLE_SUCCESS;
             })
-            .requires(sender -> sender.getSender().hasPermission("clans.delete")));
+            .requires(sender -> {
+                Entity executor = sender.getExecutor();
+                if (executor == null) return false;
+                return sender.getSender().hasPermission("clans.delete")
+                        && clans.databaseConnection.getClanOwnedByPlayer(executor.getUniqueId()) != null; // is a clan owner
+            }));
     }
 }

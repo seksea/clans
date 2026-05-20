@@ -53,7 +53,7 @@ public class ManageCommand extends BaseCommand {
                     Entity executor = sender.getExecutor();
                     if (executor == null) return false;
                     return sender.getSender().hasPermission("clans.manage")
-                            && clans.databaseConnection.getClanOwnedByPlayer(executor.getUniqueId()) != null;
+                            && clans.databaseConnection.getClanOwnedByPlayer(executor.getUniqueId()) != null; // is a clan owner
                 })
         );
     }

@@ -47,7 +47,7 @@ public class NewCommand extends BaseCommand {
                 Entity executor = sender.getExecutor();
                 if (executor == null) return false;
                 return sender.getSender().hasPermission("clans.new")
-                        && clans.databaseConnection.getPlayerClan(executor.getUniqueId()).isEmpty();
+                        && clans.databaseConnection.getPlayerClan(executor.getUniqueId()).isEmpty(); // not in a clan
             }));
     }
 }
