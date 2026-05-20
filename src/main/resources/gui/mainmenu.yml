@@ -1,0 +1,21 @@
+title: "七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七"
+layout: |
+  . . . . . . . . .
+  . . . . . . . . .
+  . . . . . . . . .
+  . . . . . . . . .
+  . S I . . . . L .
+  . . . . . . . . .
+items:
+  S:
+    material: CHEST
+    name: "<bold>Storage</bold>"
+    lore: "<grey>Access the shared storage.</grey>"
+  I:
+    material: PAPER
+    name: "<bold>Invite</bold>"
+    lore: "<grey>Invite a new player to the clan.</grey>"
+  L:
+    material: BARRIER
+    name: "<red><bold>Leave</bold></red>"
+    lore: "<grey>Leave this clan.</grey>"
