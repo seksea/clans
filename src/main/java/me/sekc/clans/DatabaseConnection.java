@@ -1,5 +1,9 @@
 package me.sekc.clans;
 
+import it.unimi.dsi.fastutil.Pair;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +55,25 @@ public class DatabaseConnection {
                 clanNameList.add(results.getString("name"));
             }
             return clanNameList;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Pair<UUID, String>> getPlayersInClan(String clan) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT uuid FROM players where clan=?"
+            );
+            stmt.setString(1, clan);
+            ResultSet results = stmt.executeQuery();
+            List<Pair<UUID, String>> playerList = new ArrayList<>();
+            while (results.next()) {
+                UUID playerUUID = UUID.fromString(results.getString("uuid"));
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerUUID);
+                playerList.add(Pair.of(playerUUID, offlinePlayer.getName()));
+            }
+            return playerList;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

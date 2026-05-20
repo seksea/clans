@@ -106,7 +106,7 @@ public final class Clans extends JavaPlugin {
         }
 
 
-        return PlaceholderAPI.setPlaceholders(offlinePlayer, original);
+        return PlaceholderAPI.setPlaceholders(offlinePlayer, original.stripTrailing()); // strip trailing as multiline yaml strings always end with unnecessary newline
     }
 
     public void commandResponseInChat(CommandSourceStack source, String messageYmlPath, Map<String, String> customPlaceholders) {

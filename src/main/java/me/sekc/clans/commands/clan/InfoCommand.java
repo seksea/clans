@@ -7,6 +7,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import it.unimi.dsi.fastutil.Pair;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.sekc.clans.Clans;
 import me.sekc.clans.commands.BaseCommand;
@@ -18,6 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandException;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -40,11 +42,19 @@ public class InfoCommand extends BaseCommand {
 
                     OfflinePlayer owner = Bukkit.getOfflinePlayer(clans.databaseConnection.getClanOwner(clanName));
 
+                    Collection<Pair<UUID, String>> playersInClan = clans.databaseConnection.getPlayersInClan(clanName);
+                    String clanMembersString = "";
+                    for (Pair<UUID, String> player : playersInClan) {
+                        clanMembersString += " - " + player.right();
+                    }
+
                     clans.commandResponseInChat(ctx.getSource(), "commands.info.info-message",
                             Map.ofEntries(
                                     Map.entry("%clan_name%", clanName),
                                     Map.entry("%clan_description%", clans.databaseConnection.getClanDescription(clanName)),
-                                    Map.entry("%clan_owner_name%", owner.getName())
+                                    Map.entry("%clan_owner_name%", owner.getName()),
+                                    Map.entry("%clan_num_members%", Integer.toString(playersInClan.size())),
+                                    Map.entry("%clan_members_list%", clanMembersString)
                             ));
                     return Command.SINGLE_SUCCESS;
                 })
