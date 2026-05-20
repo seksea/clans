@@ -27,9 +27,7 @@ public class NewCommand extends BaseCommand {
                         return Command.SINGLE_SUCCESS;
                     }
 
-                    clans.databaseConnection.createNewClan(clanName, ownerUUID);
-                    // set the owner of the clan to be a member of the clan
-                    clans.databaseConnection.setPlayerClan(ownerUUID, clanName);
+                    clans.databaseConnection.createNewClan(clanName, ownerUUID); // creates clan and adds owner to it
 
                     clans.commandResponseInChat(ctx.getSource(), "commands.new.created-new-clan",
                             Map.ofEntries(

@@ -10,6 +10,15 @@ import java.util.List;
 import java.util.UUID;
 
 public class DatabaseConnection {
+    public String sanitiseString(String input) {
+        // prepared statements don't allow custom table names, so needs to be sanitised manually
+        return input.replace("'", "").replace(";", "").replace("\"", "").replace("\\", "");
+    }
+
+    String clanMembersTableSchema = " ("
+            + "   uuid     VARCHAR(36) NOT NULL PRIMARY KEY" // foreign key to players table
+            + ")";
+
     Connection connection;
 
     DatabaseConnection(String databasePath) throws Exception {
@@ -60,18 +69,23 @@ public class DatabaseConnection {
         }
     }
 
-    public List<Pair<UUID, String>> getPlayersInClan(String clan) {
+    public class ClanPlayerData {
+        public OfflinePlayer offlinePlayer;
+
+        ClanPlayerData(OfflinePlayer offlinePlayer) {
+            this.offlinePlayer = offlinePlayer;
+        }
+    }
+    public List<ClanPlayerData> getPlayersInClan(String clan) {
         try {
-            PreparedStatement stmt = connection.prepareStatement(
-                    "SELECT uuid FROM players where clan=?"
+            ResultSet results = connection.createStatement().executeQuery(
+                    "SELECT uuid FROM " + sanitiseString("clan_" + clan + "_members")
             );
-            stmt.setString(1, clan);
-            ResultSet results = stmt.executeQuery();
-            List<Pair<UUID, String>> playerList = new ArrayList<>();
+
+            List<ClanPlayerData> playerList = new ArrayList<>();
             while (results.next()) {
                 UUID playerUUID = UUID.fromString(results.getString("uuid"));
-                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerUUID);
-                playerList.add(Pair.of(playerUUID, offlinePlayer.getName()));
+                playerList.add(new ClanPlayerData(Bukkit.getOfflinePlayer(playerUUID)));
             }
             return playerList;
         } catch (SQLException e) {
@@ -79,14 +93,76 @@ public class DatabaseConnection {
         }
     }
 
+    public ClanPlayerData getPlayerFromClan(String clan, UUID playerUUID) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT uuid FROM ? WHERE uuid=?"
+            );
+            stmt.setString(1, "clan_" + clan + "_members");
+            stmt.setString(2, playerUUID.toString());
+            ResultSet results = stmt.executeQuery();
+
+            return new ClanPlayerData(Bukkit.getOfflinePlayer(playerUUID));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addPlayerToClan(String clan, UUID playerUUID) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "INSERT INTO " + sanitiseString("clan_" + clan + "_members") + " (uuid) VALUES (?)"
+            );
+            stmt.setString(1, playerUUID.toString());
+            stmt.executeUpdate();
+
+            PreparedStatement updatePlayerClanStmt = connection.prepareStatement(
+                    "UPDATE players SET clan=? WHERE uuid=?"
+            );
+            updatePlayerClanStmt.setString(1, clan);
+            updatePlayerClanStmt.setString(2, playerUUID.toString());
+            updatePlayerClanStmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void removePlayerFromClan(String clan, UUID playerUUID) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "DELETE FROM ? WHERE uuid=?"
+            );
+            stmt.setString(1, "clan_" + clan + "_members");
+            stmt.setString(2, playerUUID.toString());
+            stmt.executeUpdate();
+
+            PreparedStatement removeClanFromPlayerStmt = connection.prepareStatement(
+                    "UPDATE players SET clan=? WHERE uuid=?"
+            );
+            removeClanFromPlayerStmt.setString(1, null);
+            removeClanFromPlayerStmt.setString(2, playerUUID.toString());
+            removeClanFromPlayerStmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void createNewClan(String name, UUID ownerUUID) {
         try {
+            // Create row in clans table
             PreparedStatement stmt = connection.prepareStatement(
                     "INSERT INTO clans (name, owner_uuid) VALUES (?, ?)"
             );
             stmt.setString(1, name);
             stmt.setString(2, ownerUUID.toString());
             stmt.executeUpdate();
+
+            // Create table to store members in the clan
+            connection.createStatement().executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS " + sanitiseString("clan_" + name + "_members") + clanMembersTableSchema
+            );
+
+            addPlayerToClan(name, ownerUUID); // add the owner as a member
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -94,17 +170,24 @@ public class DatabaseConnection {
 
     public void deleteClan(String name) {
         try {
+            // Delete clan from clans table
             PreparedStatement stmt = connection.prepareStatement(
                     "DELETE FROM clans WHERE name=?"
             );
             stmt.setString(1, name);
             stmt.executeUpdate();
 
-            PreparedStatement stmt2 = connection.prepareStatement(
+            // Delete clan members table
+            connection.createStatement().executeUpdate(
+                    "DROP TABLE ?"
+            );
+
+            // Remove all players' clan
+            PreparedStatement removeClanFromPlayersStmt = connection.prepareStatement(
                     "UPDATE players SET clan=NULL WHERE clan=?"
             );
-            stmt2.setString(1, name);
-            stmt2.executeUpdate();
+            removeClanFromPlayersStmt.setString(1, name);
+            removeClanFromPlayersStmt.executeUpdate();
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -228,32 +311,6 @@ public class DatabaseConnection {
             ResultSet results = stmt.executeQuery();
             String clan = results.getString("clan");
             return clan == null ? "" : clan;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void setPlayerClan(UUID playerUUID, String clan) {
-        try {
-            PreparedStatement stmt = connection.prepareStatement(
-                    "UPDATE players SET clan=? WHERE uuid=?"
-            );
-            stmt.setString(1, clan);
-            stmt.setString(2, playerUUID.toString());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void playerLeaveClan(UUID playerUUID) {
-        try {
-            PreparedStatement stmt = connection.prepareStatement(
-                    "UPDATE players SET clan=? WHERE uuid=?"
-            );
-            stmt.setString(1, null);
-            stmt.setString(2, playerUUID.toString());
-            stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

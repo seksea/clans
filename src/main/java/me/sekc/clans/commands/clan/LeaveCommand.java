@@ -16,20 +16,20 @@ public class LeaveCommand extends BaseCommand {
     static public void register(Clans clans, LiteralArgumentBuilder<CommandSourceStack> root) {
         root.then(Commands.literal("leave")
             .executes(ctx -> {
-                UUID ownerUUID = ctx.getSource().getExecutor().getUniqueId();
-                String clanName = clans.databaseConnection.getPlayerClan(ownerUUID);
+                UUID playerUUID = ctx.getSource().getExecutor().getUniqueId();
+                String clanName = clans.databaseConnection.getPlayerClan(playerUUID);
 
                 if (clanName.isEmpty()) {
                     clans.commandResponseInChat(ctx.getSource(), "commands.leave.not-in-clan", null);
                     return Command.SINGLE_SUCCESS;
                 }
 
-                if (clans.databaseConnection.getClanOwnedByPlayer(ownerUUID) != null) {
+                if (clans.databaseConnection.getClanOwnedByPlayer(playerUUID) != null) {
                     clans.commandResponseInChat(ctx.getSource(), "commands.leave.owner-of-clan", null);
                     return Command.SINGLE_SUCCESS;
                 }
 
-                clans.databaseConnection.playerLeaveClan(ownerUUID);
+                clans.databaseConnection.removePlayerFromClan(clanName, playerUUID);
 
                 clans.commandResponseInChat(ctx.getSource(), "commands.leave.left-clan",
                         Map.ofEntries(Map.entry("%clan_name%", clanName)));

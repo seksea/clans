@@ -10,6 +10,7 @@ import io.papermc.paper.command.brigadier.Commands;
 import it.unimi.dsi.fastutil.Pair;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.sekc.clans.Clans;
+import me.sekc.clans.DatabaseConnection;
 import me.sekc.clans.commands.BaseCommand;
 import me.sekc.clans.commands.clan.suggestions.ClanSuggestionProvider;
 import net.kyori.adventure.text.Component;
@@ -42,10 +43,10 @@ public class InfoCommand extends BaseCommand {
 
                     OfflinePlayer owner = Bukkit.getOfflinePlayer(clans.databaseConnection.getClanOwner(clanName));
 
-                    Collection<Pair<UUID, String>> playersInClan = clans.databaseConnection.getPlayersInClan(clanName);
+                    Collection<DatabaseConnection.ClanPlayerData> playersInClan = clans.databaseConnection.getPlayersInClan(clanName);
                     String clanMembersString = "";
-                    for (Pair<UUID, String> player : playersInClan) {
-                        clanMembersString += " - " + player.right();
+                    for (DatabaseConnection.ClanPlayerData player : playersInClan) {
+                        clanMembersString += " - " + player.offlinePlayer.getName();
                     }
 
                     clans.commandResponseInChat(ctx.getSource(), "commands.info.info-message",
