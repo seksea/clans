@@ -7,6 +7,8 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import me.sekc.clans.Clans;
 import me.sekc.clans.commands.BaseCommand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,9 +36,18 @@ public class NewCommand extends BaseCommand {
                                     Map.entry("%clan_name%", clanName)
                             ));
 
+                    if (ctx.getSource().getExecutor() instanceof Player player) {
+                        player.updateCommands(); // so `/clans manage` shows up
+                    }
+
                     return Command.SINGLE_SUCCESS;
                 })
             )
-            .requires(sender -> sender.getSender().hasPermission("clans.new")));
+            .requires(sender -> {
+                Entity executor = sender.getExecutor();
+                if (executor == null) return false;
+                return sender.getSender().hasPermission("clans.new")
+                        && clans.databaseConnection.getPlayerClan(executor.getUniqueId()).isEmpty();
+            }));
     }
 }

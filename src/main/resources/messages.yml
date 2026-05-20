@@ -1,15 +1,24 @@
 commands:
-  new:
-    already-in-clan: "Can't create clan as you are already in another clan, use <bold>/clan leave</bold> first."
-    created-new-clan: "Created new clan <bold>%clan_name%</bold>."
+  delete:
+    not-in-clan: "You need to be in a clan to delete a clan."
+    not-owner-of-clan: "You cannot delete a clan if you are not the owner."
+    deleted-clan: "Successfully deleted clan <bold>%clan_name%</bold>."
   info:
     info-message: |
-        <green>=========================================</green>
+        <green> ==================================</green>
         Info for clan <bold>%clan_name%</bold>:
         <grey>-----------------------------------------</grey>
         Description: <grey>%clan_description%</grey>
+        Owner: <bold>%clan_owner_name%</bold>
         <green>=========================================</green>
     not-exist: "Clan <bold>%clan_name%</bold> does not exist."
+  leave:
+    not-in-clan: "You need to be in a clan to leave a clan."
+    owner-of-clan: "You cannot leave a clan if you are the owner, please delete the clan with <bold>/clan delete</bold>."
+    left-clan: "You have left the clan <bold>%clan_name%</bold>"
   manage:
     update-var: "Updating <bold>%var_name%</bold> of clan <bold>%clan_name%</bold> to: <grey>%new_value%</grey>"
-    get-var: "Setting <bold>%var_name%</bold> of clan <bold>%clan_name%</bold> is: <grey>%value%</grey>"
+    get-var: "<bold>%var_name%</bold> of clan <bold>%clan_name%</bold> is: <grey>%value%</grey>"
+  new:
+    already-in-clan: "Can't create clan as you are already in another clan, use <bold>/clan leave</bold> first."
+    created-new-clan: "Created new clan <bold>%clan_name%</bold>."

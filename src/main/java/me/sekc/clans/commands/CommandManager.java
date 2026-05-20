@@ -6,16 +6,16 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import me.sekc.clans.Clans;
-import me.sekc.clans.commands.clan.InfoCommand;
-import me.sekc.clans.commands.clan.ManageCommand;
-import me.sekc.clans.commands.clan.NewCommand;
+import me.sekc.clans.commands.clan.*;
 
 public class CommandManager {
     static public void registerCommands(Clans clans) {
         Clans.log("Creating commands...");
 
         LiteralArgumentBuilder<CommandSourceStack> clanRoot = Commands.literal("clan");
+        DeleteCommand.register(clans, clanRoot);
         InfoCommand.register(clans, clanRoot);
+        LeaveCommand.register(clans, clanRoot);
         ManageCommand.register(clans, clanRoot);
         NewCommand.register(clans, clanRoot);
         LiteralCommandNode<CommandSourceStack> buildClanRoot = clanRoot.build();

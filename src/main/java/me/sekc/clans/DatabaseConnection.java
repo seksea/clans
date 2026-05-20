@@ -1,6 +1,8 @@
 package me.sekc.clans;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class DatabaseConnection {
@@ -38,6 +40,22 @@ public class DatabaseConnection {
      *  Clans
      -----------------------------------*/
 
+    public List<String> getAllClanNames() {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT name FROM clans"
+            );
+            ResultSet results = stmt.executeQuery();
+            List<String> clanNameList = new ArrayList<>();
+            while (results.next()) {
+                clanNameList.add(results.getString("name"));
+            }
+            return clanNameList;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void createNewClan(String name, UUID ownerUUID) {
         try {
             PreparedStatement stmt = connection.prepareStatement(
@@ -46,6 +64,38 @@ public class DatabaseConnection {
             stmt.setString(1, name);
             stmt.setString(2, ownerUUID.toString());
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteClan(String name) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "DELETE FROM clans WHERE name=?"
+            );
+            stmt.setString(1, name);
+            stmt.executeUpdate();
+
+            PreparedStatement stmt2 = connection.prepareStatement(
+                    "UPDATE players SET clan=NULL WHERE clan=?"
+            );
+            stmt2.setString(1, name);
+            stmt2.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public UUID getClanOwner(String name) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT owner_uuid FROM clans WHERE name=?"
+            );
+            stmt.setString(1, name);
+            ResultSet results = stmt.executeQuery();
+            return UUID.fromString(results.getString("owner_uuid"));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -168,6 +218,37 @@ public class DatabaseConnection {
             stmt.setString(1, clan);
             stmt.setString(2, playerUUID.toString());
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void playerLeaveClan(UUID playerUUID) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "UPDATE players SET clan=? WHERE uuid=?"
+            );
+            stmt.setString(1, null);
+            stmt.setString(2, playerUUID.toString());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getClanOwnedByPlayer(UUID playerUUID) { // Get the clan this player owns, returns null if does not own any clans
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT clan FROM players WHERE uuid=?"
+            );
+            stmt.setString(1, playerUUID.toString());
+            ResultSet results = stmt.executeQuery();
+            String clan = results.getString("clan");
+
+            if (clan == null || clan.isEmpty()) return null;
+
+            UUID owner = getClanOwner(clan);
+            return owner.equals(playerUUID) ? clan : null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
