@@ -4,6 +4,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.sekc.clans.Clans;
 import me.sekc.clans.gui.menus.MainMenu;
 import me.sekc.clans.gui.menus.NoClanMainMenu;
+import me.sekc.clans.gui.menus.OwnerMainMenu;
 import me.sekc.clans.gui.menus.StorageMenu;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -140,12 +141,14 @@ public class BaseMenu {
         // Override me!
 
         // item ids that work everywhere!
-
         if (clickedItem.id != null) {
             if (clickedItem.id.equals("mainmenu")) {
                 if (clans.databaseConnection.getPlayerClan(e.getWhoClicked().getUniqueId()).isEmpty()) {
                     // not in a clan, open the `No Clan` main menu
                     MenuManager.open(e.getWhoClicked(), new NoClanMainMenu(clans));
+                } else if (clans.databaseConnection.getClanOwnedByPlayer(e.getWhoClicked().getUniqueId()) != null){
+                    // owner of a clan, open the owner main menu
+                    MenuManager.open(e.getWhoClicked(), new OwnerMainMenu(clans));
                 } else {
                     // in a clan, open the normal main menu
                     MenuManager.open(e.getWhoClicked(), new MainMenu(clans));

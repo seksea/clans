@@ -14,7 +14,7 @@ layout: |
   . . . . . . . . .
   . . . . . . . . .
   . F S I . . . L .
-  . . . . . . . . .
+  . . . . C . . . .
 
 # Define the items to fill the layout with, the only thing that matters here is the "id", as that controls what
 # the button does, so don't change that, everything else is cosmetic and can be customised.
@@ -39,3 +39,8 @@ items:
     material: BARRIER
     name: "<red><bold>Leave</bold></red>"
     lore: "<grey>Leave this clan.</grey>"
+  C:
+    id: "claninfo"
+    material: PAPER
+    name: "<bold>Info</bold>"
+    lore: "<grey>blah blah blah</grey>" # lore is set by MainMenu

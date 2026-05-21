@@ -33,7 +33,7 @@ public class ManageCommand extends BaseCommand {
                                             Map.entry("%value%", getSetting.get(clanName))
                                     ));
                             return Command.SINGLE_SUCCESS;
-                        }).then(Commands.argument(argumentName, StringArgumentType.string())
+                        }).then(Commands.argument(argumentName, StringArgumentType.greedyString())
                                 .executes(ctx -> {
                                     String clanName = clans.databaseConnection.getClanOwnedByPlayer(ctx.getSource().getExecutor().getUniqueId());
                                     String newValue = ctx.getArgument(argumentName, String.class);

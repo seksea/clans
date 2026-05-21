@@ -46,7 +46,7 @@ public class InfoCommand extends BaseCommand {
                     Collection<DatabaseConnection.ClanPlayerData> playersInClan = clans.databaseConnection.getPlayersInClan(clanName);
                     String clanMembersString = "";
                     for (DatabaseConnection.ClanPlayerData player : playersInClan) {
-                        clanMembersString += " - " + player.offlinePlayer.getName();
+                        clanMembersString += " - " + player.offlinePlayer.getName() + "<br>";
                     }
 
                     clans.commandResponseInChat(ctx.getSource(), "info.info-message",

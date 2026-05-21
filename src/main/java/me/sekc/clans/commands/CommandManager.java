@@ -16,6 +16,7 @@ public class CommandManager {
         DeleteCommand.register(clans, clanRoot);
         GUICommand.register(clans, clanRoot);
         InfoCommand.register(clans, clanRoot);
+        InviteCommand.register(clans, clanRoot);
         LeaveCommand.register(clans, clanRoot);
         ManageCommand.register(clans, clanRoot);
         NewCommand.register(clans, clanRoot);

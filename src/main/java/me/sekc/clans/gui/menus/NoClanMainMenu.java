@@ -29,10 +29,14 @@ public class NoClanMainMenu extends BaseMenu {
                 MenuManager.closeInventory(player);
 
                 MenuManager.performActionAfterTyping(player.getUniqueId(), message -> {
-                    player.performCommand("clan new " + message.replace(" ", "_")); // perform `/clan new` command
+                    try {
+                        player.performCommand("clan new " + message.replace(" ", "_")); // perform `/clan new` command
+                    } catch (Exception err) {
+                        clans.messageInChat(e.getWhoClicked(), "new.invalid-name", null);
+                    }
                 });
             } else if (clickedItem.id.equals("invites")) {
-
+                MenuManager.open(e.getWhoClicked(), new InvitesMenu(clans));
             }
         }
     }

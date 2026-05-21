@@ -43,7 +43,7 @@ public class StorageMenu extends BaseMenu {
 
                 if (customSlotId < storageSlots.size()) {
                     DatabaseConnection.StorageSlot slot = storageSlots.get(customSlotId);
-                    item.id = "slot_" + String.valueOf(customSlotId);
+                    item.id = "slot " + String.valueOf(customSlotId);
                     item.material = Material.valueOf(slot.color.name() + "_SHULKER_BOX");
                     item.name = slot.title;
 
@@ -60,8 +60,8 @@ public class StorageMenu extends BaseMenu {
         super.layoutItemClicked(clickedItem, e);
 
         if (clickedItem.id != null) {
-            if (clickedItem.id.startsWith("slot_")) {
-                MenuManager.open(e.getWhoClicked(), new StorageContentsMenu(clans, Integer.valueOf(clickedItem.id.split("_")[1])));
+            if (clickedItem.id.startsWith("slot ")) {
+                MenuManager.open(e.getWhoClicked(), new StorageContentsMenu(clans, Integer.valueOf(clickedItem.id.split(" ")[1])));
             }
         }
     }

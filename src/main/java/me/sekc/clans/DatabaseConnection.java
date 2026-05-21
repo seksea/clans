@@ -7,10 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class DatabaseConnection {
     public String sanitiseString(String input) {
@@ -55,6 +52,15 @@ public class DatabaseConnection {
                         + "   uuid           VARCHAR(36) NOT NULL PRIMARY KEY,"
                         + "   experience     INTEGER NOT NULL DEFAULT 0,"
                         + "   clan           VARCHAR(32)" // foreign key to clan table
+                        + ")"
+        );
+
+        connection.createStatement().executeUpdate(
+                "CREATE TABLE IF NOT EXISTS invites ("
+                        + "   target_uuid    VARCHAR(36) NOT NULL," // foreign key to players table
+                        + "   inviter_uuid    VARCHAR(36) NOT NULL," // foreign key to players table
+                        + "   clan           VARCHAR(32)," // foreign key to clan table
+                        + "   description    VARCHAR(256) NOT NULL DEFAULT ''"
                         + ")"
         );
     }
@@ -143,10 +149,9 @@ public class DatabaseConnection {
     public void removePlayerFromClan(String clan, UUID playerUUID) {
         try {
             PreparedStatement stmt = connection.prepareStatement(
-                    "DELETE FROM ? WHERE uuid=?"
+                    "DELETE FROM " + sanitiseString("clan_" + clan + "_members") + " WHERE uuid=?"
             );
-            stmt.setString(1, "clan_" + clan + "_members");
-            stmt.setString(2, playerUUID.toString());
+            stmt.setString(1, playerUUID.toString());
             stmt.executeUpdate();
 
             PreparedStatement removeClanFromPlayerStmt = connection.prepareStatement(
@@ -494,6 +499,70 @@ public class DatabaseConnection {
                 UUID owner = getClanOwner(clan);
                 return owner.equals(playerUUID) ? clan : null;
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void sendClanInvite(String clanName, String description, UUID targetUUID, UUID inviterUUID) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "INSERT INTO invites (target_uuid, inviter_uuid, clan, description) VALUES (?, ?, ?, ?)"
+            );
+            stmt.setString(1, targetUUID.toString());
+            stmt.setString(2, inviterUUID.toString());
+            stmt.setString(3, clanName);
+            stmt.setString(4, description);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static class ClanInviteData {
+        public UUID targetUUID;
+        public String clanName;
+        public UUID inviterUUID;
+        public String description;
+        private ClanInviteData(UUID targetUUID, String clanName, UUID inviterUUID, String description) {
+            this.targetUUID = targetUUID;
+            this.clanName = clanName;
+            this.inviterUUID = inviterUUID;
+            this.description = description;
+        }
+    }
+    public List<ClanInviteData> getClanInvitesForPlayer(UUID targetUUID) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT inviter_uuid, clan, description FROM invites WHERE target_uuid=?"
+            );
+            stmt.setString(1, targetUUID.toString());
+
+            List<ClanInviteData> invites = new ArrayList<>();
+            try (ResultSet results = stmt.executeQuery()) {
+                while (results.next()) {
+                    invites.add(new ClanInviteData(
+                            targetUUID,
+                            results.getString("clan"),
+                            UUID.fromString(results.getString("inviter_uuid")),
+                            results.getString("description")
+                    ));
+                }
+                return invites;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void deleteInvitesFromClan(UUID playerUUID, String clan) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "DELETE FROM invites WHERE clan=? AND target_uuid=?"
+            );
+            stmt.setString(1, clan);
+            stmt.setString(2, playerUUID.toString());
+            stmt.executeUpdate();
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

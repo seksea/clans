@@ -51,7 +51,7 @@ public class StorageContentsMenu extends BaseMenu {
                 ItemStack itemStack = storage.itemStacks.get(curIndex);
 
                 if (!itemStack.isEmpty()) {
-                    item.id = "slot_" + String.valueOf(curIndex);
+                    item.id = "slot " + String.valueOf(curIndex);
                     item.customItemStack = itemStack;
 
                     gui.setItem(curIndex, itemStack);

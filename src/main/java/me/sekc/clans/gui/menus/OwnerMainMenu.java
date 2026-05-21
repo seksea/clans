@@ -18,5 +18,14 @@ public class OwnerMainMenu extends MainMenu {
     @Override
     protected void layoutItemClicked(LayoutItem clickedItem, InventoryClickEvent e) {
         super.layoutItemClicked(clickedItem, e); // Handle the normal MainMenu buttons
+
+        if (clickedItem.id != null) {
+            if (clickedItem.id.equals("delete")) {
+                MenuManager.open(e.getWhoClicked(), new DeleteMenu(clans));
+            }
+            if (clickedItem.id.equals("manage")) {
+                clans.messageInChat(e.getWhoClicked(), "todo", null);
+            }
+        }
     }
 }
