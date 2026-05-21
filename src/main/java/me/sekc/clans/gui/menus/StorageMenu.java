@@ -12,6 +12,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 
 import java.util.List;
+import java.util.Set;
 
 public class StorageMenu extends BaseMenu {
     public StorageMenu(Clans clans) {

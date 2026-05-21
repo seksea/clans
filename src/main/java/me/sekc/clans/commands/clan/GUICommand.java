@@ -10,25 +10,33 @@ import me.sekc.clans.gui.menus.MainMenu;
 import me.sekc.clans.gui.MenuManager;
 import me.sekc.clans.gui.menus.NoClanMainMenu;
 import me.sekc.clans.gui.menus.OwnerMainMenu;
+import org.bukkit.entity.Entity;
 
 import java.util.UUID;
 
 public class GUICommand extends BaseCommand {
+    static public void openMainMenu(Clans clans, Entity player) {
+        UUID playerUUID = player.getUniqueId();
+        if (clans.databaseConnection.getPlayerClan(playerUUID).isEmpty()) {
+            // not in a clan, open the `No Clan` main menu
+            MenuManager.open(player, new NoClanMainMenu(clans));
+        } else if (clans.databaseConnection.getClanOwnedByPlayer(playerUUID) != null){
+            // owner of a clan, open the owner main menu
+            MenuManager.open(player, new OwnerMainMenu(clans));
+        } else {
+            // member of a clan, open the normal main menu
+            MenuManager.open(player, new MainMenu(clans));
+        }
+    }
     static public void register(Clans clans, LiteralArgumentBuilder<CommandSourceStack> root) {
+        root.executes(ctx -> {
+            openMainMenu(clans, ctx.getSource().getExecutor());
+
+            return Command.SINGLE_SUCCESS;
+        });
         root.then(Commands.literal("gui")
                 .executes(ctx -> {
-                    UUID playerUUID = ctx.getSource().getExecutor().getUniqueId();
-
-                    if (clans.databaseConnection.getPlayerClan(playerUUID).isEmpty()) {
-                        // not in a clan, open the `No Clan` main menu
-                        MenuManager.open(ctx.getSource().getExecutor(), new NoClanMainMenu(clans));
-                    } else if (clans.databaseConnection.getClanOwnedByPlayer(playerUUID) != null){
-                        // owner of a clan, open the owner main menu
-                        MenuManager.open(ctx.getSource().getExecutor(), new OwnerMainMenu(clans));
-                    } else {
-                        // member of a clan, open the normal main menu
-                        MenuManager.open(ctx.getSource().getExecutor(), new MainMenu(clans));
-                    }
+                    openMainMenu(clans, ctx.getSource().getExecutor());
 
                     return Command.SINGLE_SUCCESS;
                 })

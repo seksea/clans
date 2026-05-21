@@ -17,9 +17,11 @@ public class CommandManager {
         GUICommand.register(clans, clanRoot);
         InfoCommand.register(clans, clanRoot);
         InviteCommand.register(clans, clanRoot);
+        InvitesCommand.register(clans, clanRoot);
         LeaveCommand.register(clans, clanRoot);
         ManageCommand.register(clans, clanRoot);
         NewCommand.register(clans, clanRoot);
+        StorageCommand.register(clans, clanRoot);
         LiteralCommandNode<CommandSourceStack> buildClanRoot = clanRoot.build();
 
         clans.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {

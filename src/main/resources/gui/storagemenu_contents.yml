@@ -1,7 +1,7 @@
 # The title contains these funky characters as the custom resource pack defines them as pngs,
 # change this to a normal title if you are not using a custom resource pack.
 #   = backspace (move text cursor backwards)
-#   = main menu gui png
+#   = storage menu png
 title: ""
 
 # The layout of the UI

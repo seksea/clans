@@ -19,7 +19,7 @@ public class LeaveCommand extends BaseCommand {
     static public void register(Clans clans, LiteralArgumentBuilder<CommandSourceStack> root) {
         root.then(Commands.literal("leave")
             .executes(ctx -> {
-                MenuManager.open(ctx.getSource().getExecutor(), new DeleteMenu(clans)); // open delete menu
+                MenuManager.open(ctx.getSource().getExecutor(), new LeaveMenu(clans)); // open delete menu
 
                 return Command.SINGLE_SUCCESS;
             }).then(Commands.literal("yes_i_am_sure").executes(ctx -> {
