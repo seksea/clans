@@ -24,6 +24,8 @@ public class LeaveMenu extends BaseMenu {
     @Override
     protected void layoutItemClicked(LayoutItem clickedItem, InventoryClickEvent e) {
         if (clickedItem.id.equals("yes")) { // leave the clan
+            MenuManager.closeInventory(e.getWhoClicked());
+
             UUID playerUUID = e.getWhoClicked().getUniqueId();
             String clanName = clans.databaseConnection.getPlayerClan(playerUUID);
 

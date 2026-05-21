@@ -15,12 +15,12 @@ commands:
     not-exist: "Clan <b>%clan_name%</b> does not exist."
   leave:
     not-in-clan: "You need to be in a clan to leave a clan."
-    owner-of-clan: "You cannot leave a clan if you are the owner, please delete the clan with <b>/clan delete</b>."
+    owner-of-clan: "You cannot leave a clan if you are the owner, please delete the clan with <hover:show_text:\"Click me!\"><click:run_command:clan delete><b>/clan delete</b></click></hover>."
     left-clan: "You have left the clan <b>%clan_name%</b>"
   manage:
     update-var: "Updating <b>%var_name%</b> of clan <b>%clan_name%</b> to: <grey>%new_value%</grey>"
     get-var: "<b>%var_name%</b> of clan <b>%clan_name%</b> is: <grey>%value%</grey>"
   new:
     awaiting-input: "Type the name of your new clan in chat:"
-    already-in-clan: "Can't create clan as you are already in another clan, use <b>/clan leave</b> first."
+    already-in-clan: "Can't create clan as you are already in another clan, use <hover:show_text:\"Click me!\"><click:run_command:clan leave><b>/clan leave</b></click></hover> first."
     created-new-clan: "Created new clan <b>%clan_name%</b>."

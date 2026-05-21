@@ -71,10 +71,11 @@ public class MenuManager {
         if (runnable != null) {
             e.setCancelled(true); // Don't send to public chat
 
-            new BukkitRunnable() {
+            String plainTextMessage = PlainTextComponentSerializer.plainText().serialize(e.message());
+            new BukkitRunnable() { // Make sure it runs on main thread
                 @Override
                 public void run() {
-                    runnable.run(PlainTextComponentSerializer.plainText().serialize(e.message()));
+                    runnable.run(plainTextMessage);
                 }
             }.runTask(Clans.getPlugin(Clans.class));
         }
