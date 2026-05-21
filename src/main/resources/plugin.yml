@@ -6,6 +6,6 @@ main: me.sekc.clans.Clans
 api-version: '26.1.2'
 load: POSTWORLD
 
-depend: [ NBTAPI, PlaceholderAPI ]
+depend: [ PlaceholderAPI ]
 
 authors: [ sekc ]

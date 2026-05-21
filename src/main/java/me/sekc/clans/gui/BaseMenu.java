@@ -37,6 +37,7 @@ public class BaseMenu {
         public String name;
         public String lore;
         public boolean custom = false; // is it a `_`?
+        public ItemStack customItemStack = ItemStack.empty(); // if this is set then it will return this instead of making an itemstack
 
         LayoutItem(Material material, String id, String name, String lore) {
             this.material = material;
@@ -49,6 +50,11 @@ public class BaseMenu {
         }
 
         public ItemStack getItemStack() {
+            if (!customItemStack.isEmpty()) return customItemStack;
+
+            if (material == null) {
+                return ItemStack.empty();
+            }
             ItemStack item = ItemStack.of(material);
 
             ItemMeta meta = item.getItemMeta();

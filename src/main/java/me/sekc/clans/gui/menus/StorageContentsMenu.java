@@ -1,7 +1,7 @@
 package me.sekc.clans.gui.menus;
 
-import de.tr7zw.nbtapi.NBTItem;
-import de.tr7zw.nbtapi.iface.ReadableNBT;
+import io.papermc.paper.datacomponent.DataComponentType;
+import io.papermc.paper.registry.keys.DataComponentTypeKeys;
 import me.sekc.clans.Clans;
 import me.sekc.clans.DatabaseConnection;
 import me.sekc.clans.gui.BaseMenu;
@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class StorageContentsMenu extends BaseMenu {
     int index = 0; // The index in the database
@@ -44,19 +45,16 @@ public class StorageContentsMenu extends BaseMenu {
         int curIndex = 0;
         for (LayoutItem item : layoutArray) {
             // List the contents of this storage
-            if (curIndex >= storage.nbtData.size()) break; // No more is stored
+            if (curIndex > storage.itemStacks.size()) break; // No more is stored
 
-            if (item.custom) { // only modify items in the layout that are custom
-                ReadableNBT nbtItem = storage.nbtData.get(curIndex);
+            if (item != null && item.custom) { // only modify items in the layout that are custom
+                ItemStack itemStack = storage.itemStacks.get(curIndex);
 
-                if (nbtItem != null) {
-                    /*ItemStack itemStack = nbtItem.getItem();
-
+                if (!itemStack.isEmpty()) {
                     item.id = "slot_" + String.valueOf(curIndex);
-                    item.material = itemStack.getType();
-                    item.name = String.valueOf(itemStack.displayName());
+                    item.customItemStack = itemStack;
 
-                    gui.setItem(curIndex, item.getItemStack());*/
+                    gui.setItem(curIndex, itemStack);
                 }
             }
 
@@ -64,30 +62,76 @@ public class StorageContentsMenu extends BaseMenu {
         }
     }
 
-    private void addItemToStorage(String clanName, ItemStack itemStack, int customSlotID) {
+    private void setItemInStorage(String clanName, ItemStack itemStack, int customSlotID) {
         clans.databaseConnection.setItemInClanStorage(clanName, itemStack, this.index, customSlotID);
     }
 
     @Override
-    protected void layoutItemClicked(LayoutItem clickedItem, InventoryClickEvent e) {
-        super.layoutItemClicked(clickedItem, e);
+    protected void layoutItemClicked(LayoutItem clickedLayoutItem, InventoryClickEvent e) {
+        super.layoutItemClicked(clickedLayoutItem, e);
+
+        ItemStack clickedItemStack = e.getCurrentItem();
 
         String clanName = clans.databaseConnection.getPlayerClan(e.getWhoClicked().getUniqueId());
 
-        if (clickedItem.custom) {
+        if (clickedLayoutItem.custom) {
+            int customSlotId = this.slotIdToCustomSlotID(e.getSlot());
             ItemStack cursor = e.getCursor();
 
-            if (!cursor.isEmpty()) {
-                // An item has been dragged into the UI, add it and uncancel the event
-                e.setCancelled(false);
-                addItemToStorage(clanName, cursor, this.slotIdToCustomSlotID(e.getSlot()));
+            if (customSlotId != -1) {
+                if (clickedItemStack == null || clickedItemStack.isEmpty()) {
+                    if (!cursor.isEmpty()) {
+                        // An item has been dragged into the UI, add it and uncancel the event
+                        ItemStack newItemStack = cursor.clone();
+
+                        if (e.isRightClick()) {
+                            newItemStack.setAmount(1); // if right click then add 1
+                        }
+
+                        setItemInStorage(clanName, newItemStack, customSlotId);
+                        e.setCancelled(false);
+                    } else {
+                        // An empty slot has been clicked with nothing in cursor, do nothing
+                    }
+                } else {
+                    if (!cursor.isEmpty()) {
+                        // An item has been dragged onto another item on the UI, add it and uncancel the event
+                        ItemStack newItemStack = cursor.clone();
+
+                        if (newItemStack.isSimilar(clickedItemStack)) {
+                            if (e.isRightClick()) {
+                                int newAmount = Math.clamp(clickedItemStack.getAmount()+1, 1, newItemStack.getMaxStackSize());
+                                newItemStack.setAmount(newAmount); // if right click and is same item then add 1
+                                e.setCancelled(false);
+                            }
+                            if (e.isLeftClick()) {
+                                int newAmount = Math.clamp(clickedItemStack.getAmount()+newItemStack.getAmount(), 1, newItemStack.getMaxStackSize());
+                                newItemStack.setAmount(newAmount); // if left click and is same item then add all that we can
+                                e.setCancelled(false);
+                            }
+                        }
+                        e.setCancelled(false);
+                        setItemInStorage(clanName, newItemStack, customSlotId); // swap items
+                    } else {
+                        if (e.isLeftClick()) {
+                            // An item is being removed from the UI, uncancel and remove it from the db
+                            setItemInStorage(clanName, ItemStack.empty(), customSlotId);
+                            e.setCancelled(false);
+                        } else if (e.isRightClick()) {
+                            ItemStack newItemStack = clickedItemStack.clone();
+                            newItemStack.setAmount(newItemStack.getAmount()/2);
+                            setItemInStorage(clanName, newItemStack, customSlotId);
+                            e.setCancelled(false);
+                        }
+                    }
+                }
             }
         }
 
-        if (clickedItem.id != null) {
-            if (clickedItem.id.equals("back")) {
+        if (clickedLayoutItem.id != null) {
+            if (clickedLayoutItem.id.equals("back")) {
                 MenuManager.open(e.getWhoClicked(), new StorageMenu(clans));
-            } else if (clickedItem.id.equals("rename")) {
+            } else if (clickedLayoutItem.id.equals("rename")) {
                 clans.messageInChat(e.getWhoClicked(), "commands.storage.awaiting-name-input", null);
 
                 MenuManager.closeInventory(e.getWhoClicked());
@@ -97,7 +141,7 @@ public class StorageContentsMenu extends BaseMenu {
                     clans.messageInChat(e.getWhoClicked(), "commands.storage.renamed", Map.ofEntries(Map.entry("%new_name%", message)));
                     MenuManager.open(e.getWhoClicked(), new StorageContentsMenu(clans, this.index)); // re-open this menu
                 });
-            } else if (clickedItem.id.equals("color")) {
+            } else if (clickedLayoutItem.id.equals("color")) {
                 clans.messageInChat(e.getWhoClicked(), "commands.storage.awaiting-color-input", null);
 
                 MenuManager.closeInventory(e.getWhoClicked());

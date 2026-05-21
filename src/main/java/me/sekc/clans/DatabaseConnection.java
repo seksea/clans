@@ -1,20 +1,14 @@
 package me.sekc.clans;
 
-import com.google.gson.*;
-import de.tr7zw.nbtapi.NBT;
-import de.tr7zw.nbtapi.NBTItem;
-import de.tr7zw.nbtapi.iface.ReadWriteItemNBT;
-import de.tr7zw.nbtapi.iface.ReadWriteNBT;
-import de.tr7zw.nbtapi.iface.ReadableNBT;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.inventory.ItemFactory;
 import org.bukkit.inventory.ItemStack;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,7 +26,7 @@ public class DatabaseConnection {
             + "   id               INTEGER PRIMARY KEY,"
             + "   storage_name     VARCHAR(32) NOT NULL DEFAULT 'Unnamed',"
             + "   color     VARCHAR(32) NOT NULL DEFAULT 'WHITE',"
-            + "   data     TEXT NOT NULL DEFAULT '[" + (new String(new char[(9*5)-1]).replace("\0", "{},")) + "{}]'"
+            + "   data     TEXT"
             + ")";
 
     Connection connection;
@@ -284,60 +278,33 @@ public class DatabaseConnection {
     public static class StorageSlot {
         public String title;
         public DyeColor color;
-        public List<ReadableNBT> nbtData;
+        public List<ItemStack> itemStacks;
 
-        StorageSlot(String title, DyeColor color, List<ReadableNBT> nbtData) {
+        StorageSlot(String title, DyeColor color, List<ItemStack> itemStacks) {
             this.title = title;
             this.color = color;
-            this.nbtData = nbtData;
+            this.itemStacks = itemStacks;
         }
 
-        String serialiseNBTData() {
-            JsonArray jsonArray = new JsonArray();
-
-            for (ReadableNBT nbtItem : nbtData) {
-                JsonObject jsonObject = new JsonObject();
-
-                if (nbtItem == null) {
-                    jsonArray.add(jsonObject);
-                    continue;
-                }
-
-                jsonObject.add("data", new JsonPrimitive(nbtItem.toString()));
-
-                jsonArray.add(jsonObject);
-            }
-
-            return jsonArray.getAsString();
+        String getItemStackData() {
+            byte[] bytes = ItemStack.serializeItemsAsBytes(itemStacks);
+            return Base64Coder.encodeLines(bytes);
         }
 
-        static StorageSlot fromSerialised(String title, String color, String jsonData) {
-            List<ReadableNBT> nbtData = new ArrayList<>();
+        static StorageSlot fromItemStackData(String title, String color, String itemStackData) {
+            byte[] bytes = Base64Coder.decodeLines(itemStackData);
+            return new StorageSlot(title, DyeColor.valueOf(color), new ArrayList<>(Arrays.asList(ItemStack.deserializeItemsFromBytes(bytes))));
+        }
 
-            Gson gson = new Gson(); // Load each item as a string from the json array
-            JsonArray jsonArray = gson.fromJson(jsonData, JsonArray.class);
+        static String createEmptyContainerString(int numRows) {
+            List<ItemStack> itemStacks = new ArrayList<>();
 
-            for (JsonElement elem : jsonArray.asList()) {
-                if (elem instanceof JsonObject obj) {
-                    JsonElement material = obj.get("material");
-                    JsonElement amount = obj.get("amount");
-                    JsonElement data = obj.get("data");
-
-                    if (material != null && amount != null && data != null)
-                    {
-                        ItemFactory
-                        ReadWriteNBT nbtItem = NBT.parseNBT(data.getAsString());
-
-                        nbtData.add(nbtItem);
-                    } else {
-                        nbtData.add(null);
-                    }
-                } else {
-                    nbtData.add(null);
-                }
+            for (int i = 0; i <= numRows*9; i++) {
+                itemStacks.add(ItemStack.empty());
             }
 
-            return new StorageSlot(title, DyeColor.valueOf(color), nbtData);
+            StorageSlot temp = new StorageSlot("", DyeColor.WHITE, itemStacks);
+            return temp.getItemStackData();
         }
     }
     public List<StorageSlot> getStorageListFromClan(String clan) {
@@ -348,10 +315,15 @@ public class DatabaseConnection {
 
                 List<StorageSlot> storageList = new ArrayList<>();
                 while (results.next()) {
-                    storageList.add(StorageSlot.fromSerialised(
+                    String data = results.getString("data");
+                    if (data == null) {
+                        data = StorageSlot.createEmptyContainerString(6);
+                    }
+
+                    storageList.add(StorageSlot.fromItemStackData(
                             results.getString("storage_name"),
                             results.getString("color"),
-                            results.getString("data")));
+                            data));
                 }
                 return storageList;
             }
@@ -367,10 +339,14 @@ public class DatabaseConnection {
             );
             stmt.setInt(1, index+1); // sql index starts from 1
             try (ResultSet results = stmt.executeQuery()) {
-                return StorageSlot.fromSerialised(
+                String data = results.getString("data");
+                if (data == null) {
+                    data = StorageSlot.createEmptyContainerString(6);
+                }
+                return StorageSlot.fromItemStackData(
                         results.getString("storage_name"),
                         results.getString("color"),
-                        results.getString("data"));
+                        data);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -393,17 +369,13 @@ public class DatabaseConnection {
         try {
             StorageSlot storage = getStorageFromClan(clan, storageIndex);
 
-            if (itemStack == null) {
-                storage.nbtData.set(slotID, null);
-            } else {
-                storage.nbtData.set(slotID, NBT.get(itemStack, nbt -> nbt));
-            }
+            storage.itemStacks.set(slotID, itemStack);
 
             PreparedStatement stmt = connection.prepareStatement(
                     "UPDATE " + sanitiseString("clan_" + clan + "_storage") + " SET data=? WHERE id=?"
             );
-            stmt.setString(1, storage.serialiseNBTData());
-            stmt.setInt(2, storageIndex);
+            stmt.setString(1, storage.getItemStackData());
+            stmt.setInt(2, storageIndex+1);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
