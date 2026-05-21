@@ -24,12 +24,14 @@ public class DeleteMenu extends BaseMenu {
     protected void layoutItemClicked(LayoutItem clickedItem, InventoryClickEvent e) {
         super.layoutItemClicked(clickedItem, e);
 
-        if (clickedItem.id.equals("yes")) { // delete the clan
-            MenuManager.closeInventory(e.getWhoClicked());
+        if (clickedItem.id != null) {
+            if (clickedItem.id.equals("yes")) { // delete the clan
+                MenuManager.closeInventory(e.getWhoClicked());
 
-            ((Player)e.getWhoClicked()).performCommand("clan delete yes_i_am_sure"); // perform the command
-        } else if (clickedItem.id.equals("no")) { // ignore
-            MenuManager.closeInventory(e.getWhoClicked());
+                ((Player) e.getWhoClicked()).performCommand("clan delete yes_i_am_sure"); // perform the command
+            } else if (clickedItem.id.equals("no")) { // ignore
+                MenuManager.closeInventory(e.getWhoClicked());
+            }
         }
     }
 }

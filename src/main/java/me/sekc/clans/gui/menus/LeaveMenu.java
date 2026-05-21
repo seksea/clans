@@ -25,17 +25,19 @@ public class LeaveMenu extends BaseMenu {
     protected void layoutItemClicked(LayoutItem clickedItem, InventoryClickEvent e) {
         super.layoutItemClicked(clickedItem, e);
 
-        if (clickedItem.id.equals("yes")) { // leave the clan
-            MenuManager.closeInventory(e.getWhoClicked());
+        if (clickedItem.id != null) {
+            if (clickedItem.id.equals("yes")) { // leave the clan
+                MenuManager.closeInventory(e.getWhoClicked());
 
-            if (clans.databaseConnection.getClanOwnedByPlayer(e.getWhoClicked().getUniqueId()) != null) {
-                clans.messageInChat(e.getWhoClicked(), "commands.leave.owner-of-clan", null);
-                return;
+                if (clans.databaseConnection.getClanOwnedByPlayer(e.getWhoClicked().getUniqueId()) != null) {
+                    clans.messageInChat(e.getWhoClicked(), "commands.leave.owner-of-clan", null);
+                    return;
+                }
+
+                ((Player) e.getWhoClicked()).performCommand("clan leave yes_i_am_sure"); // perform the command
+            } else if (clickedItem.id.equals("no")) { // ignore
+                MenuManager.closeInventory(e.getWhoClicked());
             }
-
-            ((Player)e.getWhoClicked()).performCommand("clan leave yes_i_am_sure"); // perform the command
-        } else if (clickedItem.id.equals("no")) { // ignore
-            MenuManager.closeInventory(e.getWhoClicked());
         }
     }
 }

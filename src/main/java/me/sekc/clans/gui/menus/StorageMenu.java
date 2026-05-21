@@ -35,22 +35,23 @@ public class StorageMenu extends BaseMenu {
 
         List<DatabaseConnection.StorageSlot> storageSlots = clans.databaseConnection.getStorageListFromClan(clanName);
 
-        int curStorageIdx = 0;
         int curIndex = 0;
         for (LayoutItem item : layoutArray) {
             // List the storages we have
-            if (!item.custom) {curIndex++; continue;}; // only use custom items
-            if (curStorageIdx >= storageSlots.size()) break; // No more storage in clan
+            if (item != null && item.custom) {
+                int customSlotId = this.slotIdToCustomSlotID(curIndex);
 
-            DatabaseConnection.StorageSlot slot = storageSlots.get(curStorageIdx);
-            item.id = "slot_" + String.valueOf(curStorageIdx);
-            item.material = Material.valueOf(slot.color.name() + "_SHULKER_BOX");
-            item.name = slot.title;
+                if (customSlotId < storageSlots.size()) {
+                    DatabaseConnection.StorageSlot slot = storageSlots.get(customSlotId);
+                    item.id = "slot_" + String.valueOf(customSlotId);
+                    item.material = Material.valueOf(slot.color.name() + "_SHULKER_BOX");
+                    item.name = slot.title;
 
-            gui.setItem(curIndex, item.getItemStack());
+                    gui.setItem(curIndex, item.getItemStack());
+                }
+            }; // only use custom items
 
             curIndex++;
-            curStorageIdx++;
         }
     }
 
@@ -58,10 +59,10 @@ public class StorageMenu extends BaseMenu {
     protected void layoutItemClicked(LayoutItem clickedItem, InventoryClickEvent e) {
         super.layoutItemClicked(clickedItem, e);
 
-        if (clickedItem.id == null) { return; }
-
-        if (clickedItem.id.startsWith("slot_")) {
-            MenuManager.open(e.getWhoClicked(), new StorageContentsMenu(clans, Integer.valueOf(clickedItem.id.split("_")[1])));
+        if (clickedItem.id != null) {
+            if (clickedItem.id.startsWith("slot_")) {
+                MenuManager.open(e.getWhoClicked(), new StorageContentsMenu(clans, Integer.valueOf(clickedItem.id.split("_")[1])));
+            }
         }
     }
 }

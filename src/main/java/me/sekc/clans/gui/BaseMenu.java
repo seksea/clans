@@ -135,33 +135,66 @@ public class BaseMenu {
 
         // item ids that work everywhere!
 
-        if (clickedItem.id.equals("mainmenu")) {
-            if (clans.databaseConnection.getPlayerClan(e.getWhoClicked().getUniqueId()).isEmpty()) {
-                // not in a clan, open the `No Clan` main menu
-                MenuManager.open(e.getWhoClicked(), new NoClanMainMenu(clans));
-            } else {
-                // in a clan, open the normal main menu
-                MenuManager.open(e.getWhoClicked(), new MainMenu(clans));
+        if (clickedItem.id != null) {
+            if (clickedItem.id.equals("mainmenu")) {
+                if (clans.databaseConnection.getPlayerClan(e.getWhoClicked().getUniqueId()).isEmpty()) {
+                    // not in a clan, open the `No Clan` main menu
+                    MenuManager.open(e.getWhoClicked(), new NoClanMainMenu(clans));
+                } else {
+                    // in a clan, open the normal main menu
+                    MenuManager.open(e.getWhoClicked(), new MainMenu(clans));
+                }
             }
         }
     }
 
     public void itemClicked(InventoryClickEvent e) {
+        e.setCancelled(true); // always cancel by default when clicking in UI (can be uncancelled if required)
+
         if (e.getSlot() >= layoutArray.size() || e.getSlot() < 0) {
-            e.setCancelled(true);
             return; // clicking outside the inventory is slot -999
         }
 
         LayoutItem item = layoutArray.get(e.getSlot());
 
-
         if (item != null) {
-            e.setCancelled(!item.custom); // Don't cancel custom slots so we can handle it ourselves
             layoutItemClicked(item, e);
-        } else {
-            e.setCancelled(true);
         }
     }
 
     public String getTitle() { return menuConfiguration.getString("title"); }
+
+    public int slotIdToCustomSlotID(int slotID) {
+        // translates a slot ID to the id of the custom slot
+        int numCustomSlotsBeforeSlotID = 0;
+        int curSlotID = 0;
+        for (LayoutItem item : layoutArray) {
+            if (curSlotID >= slotID) {
+                return item.custom ? numCustomSlotsBeforeSlotID : -1; // -1 if this slot is not custom
+            }
+
+            if (item.custom)
+                numCustomSlotsBeforeSlotID++;
+            curSlotID++;
+        }
+
+        return -1;
+    }
+
+    public int customSlotIDToSlotID(int customSlotID) {
+        // translates a slot ID to the id of the custom slot
+        int numSlotsBeforeCustomSlotID = 0;
+        int curCustomSlotID = 0;
+        for (LayoutItem item : layoutArray) {
+            if (curCustomSlotID >= customSlotID) {
+                return numSlotsBeforeCustomSlotID;
+            }
+
+            if (item.custom)
+                curCustomSlotID++;
+            numSlotsBeforeCustomSlotID++;
+        }
+
+        return -1; // -1 if not enough custom slots
+    }
 }

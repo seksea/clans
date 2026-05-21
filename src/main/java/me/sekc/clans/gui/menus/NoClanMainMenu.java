@@ -22,16 +22,18 @@ public class NoClanMainMenu extends BaseMenu {
 
         Player player = (Player)e.getWhoClicked();
 
-        if (clickedItem.id.equals("new")) {
-            clans.messageInChat(e.getWhoClicked(), "commands.new.awaiting-input", null);
+        if (clickedItem.id != null) {
+            if (clickedItem.id.equals("new")) {
+                clans.messageInChat(e.getWhoClicked(), "commands.new.awaiting-input", null);
 
-            MenuManager.closeInventory(player);
+                MenuManager.closeInventory(player);
 
-            MenuManager.performActionAfterTyping(player.getUniqueId(), message -> {
-                player.performCommand("clan new " + message.replace(" ", "_")); // perform `/clan new` command
-            });
-        } else if (clickedItem.id.equals("invites")) {
+                MenuManager.performActionAfterTyping(player.getUniqueId(), message -> {
+                    player.performCommand("clan new " + message.replace(" ", "_")); // perform `/clan new` command
+                });
+            } else if (clickedItem.id.equals("invites")) {
 
+            }
         }
     }
 }

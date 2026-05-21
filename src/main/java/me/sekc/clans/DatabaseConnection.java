@@ -3,10 +3,14 @@ package me.sekc.clans;
 import com.google.gson.*;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.nbtapi.iface.ReadWriteItemNBT;
+import de.tr7zw.nbtapi.iface.ReadWriteNBT;
+import de.tr7zw.nbtapi.iface.ReadableNBT;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.inventory.ItemFactory;
 import org.bukkit.inventory.ItemStack;
 
 import java.sql.*;
@@ -280,9 +284,9 @@ public class DatabaseConnection {
     public static class StorageSlot {
         public String title;
         public DyeColor color;
-        public List<NBTItem> nbtData;
+        public List<ReadableNBT> nbtData;
 
-        StorageSlot(String title, DyeColor color, List<NBTItem> nbtData) {
+        StorageSlot(String title, DyeColor color, List<ReadableNBT> nbtData) {
             this.title = title;
             this.color = color;
             this.nbtData = nbtData;
@@ -291,7 +295,7 @@ public class DatabaseConnection {
         String serialiseNBTData() {
             JsonArray jsonArray = new JsonArray();
 
-            for (NBTItem nbtItem : nbtData) {
+            for (ReadableNBT nbtItem : nbtData) {
                 JsonObject jsonObject = new JsonObject();
 
                 if (nbtItem == null) {
@@ -299,9 +303,6 @@ public class DatabaseConnection {
                     continue;
                 }
 
-                ItemStack stack = nbtItem.getItem();
-                jsonObject.add("material", new JsonPrimitive(stack.getType().name()));
-                jsonObject.add("amount", new JsonPrimitive(stack.getAmount()));
                 jsonObject.add("data", new JsonPrimitive(nbtItem.toString()));
 
                 jsonArray.add(jsonObject);
@@ -311,7 +312,7 @@ public class DatabaseConnection {
         }
 
         static StorageSlot fromSerialised(String title, String color, String jsonData) {
-            List<NBTItem> nbtData = new ArrayList<>();
+            List<ReadableNBT> nbtData = new ArrayList<>();
 
             Gson gson = new Gson(); // Load each item as a string from the json array
             JsonArray jsonArray = gson.fromJson(jsonData, JsonArray.class);
@@ -324,8 +325,8 @@ public class DatabaseConnection {
 
                     if (material != null && amount != null && data != null)
                     {
-                        NBTItem nbtItem = new NBTItem(ItemStack.of(Material.valueOf(material.getAsString()), amount.getAsInt()));
-                        nbtItem.mergeCompound(NBT.parseNBT(data.getAsString()));
+                        ItemFactory
+                        ReadWriteNBT nbtItem = NBT.parseNBT(data.getAsString());
 
                         nbtData.add(nbtItem);
                     } else {
@@ -381,6 +382,28 @@ public class DatabaseConnection {
             PreparedStatement stmt = connection.prepareStatement(
                     "INSERT INTO " + sanitiseString("clan_" + clan + "_storage") + " DEFAULT VALUES"
             );
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // use itemStack=null to set air
+    public void setItemInClanStorage(String clan, ItemStack itemStack, int storageIndex, int slotID) {
+        try {
+            StorageSlot storage = getStorageFromClan(clan, storageIndex);
+
+            if (itemStack == null) {
+                storage.nbtData.set(slotID, null);
+            } else {
+                storage.nbtData.set(slotID, NBT.get(itemStack, nbt -> nbt));
+            }
+
+            PreparedStatement stmt = connection.prepareStatement(
+                    "UPDATE " + sanitiseString("clan_" + clan + "_storage") + " SET data=? WHERE id=?"
+            );
+            stmt.setString(1, storage.serialiseNBTData());
+            stmt.setInt(2, storageIndex);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
