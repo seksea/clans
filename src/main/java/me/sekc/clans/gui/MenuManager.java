@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -68,6 +69,14 @@ public class MenuManager {
             }
 
             openGUI.itemClicked(e);
+        }
+    }
+
+    static public void onDrag(InventoryDragEvent e) {
+        BaseMenu openGUI = playerToOpenGUIMap.get(e.getWhoClicked().getUniqueId());
+
+        if (openGUI != null) {
+            e.setCancelled(true); // don't allow any inventory drag when a GUI is open
         }
     }
 

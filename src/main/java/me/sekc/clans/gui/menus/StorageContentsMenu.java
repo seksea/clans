@@ -78,7 +78,9 @@ public class StorageContentsMenu extends BaseMenu {
             int customSlotId = this.slotIdToCustomSlotID(e.getSlot());
             ItemStack cursor = e.getCursor();
 
-            if (customSlotId != -1) {
+            if (e.isShiftClick()) {
+                e.setCancelled(true); // don't allow any shift clicks
+            } else if (customSlotId != -1) {
                 if (clickedItemStack == null || clickedItemStack.isEmpty()) {
                     if (!cursor.isEmpty()) {
                         // An item has been dragged into the UI, add it and uncancel the event
@@ -132,23 +134,27 @@ public class StorageContentsMenu extends BaseMenu {
             if (clickedLayoutItem.id.equals("back")) {
                 MenuManager.open(e.getWhoClicked(), new StorageMenu(clans));
             } else if (clickedLayoutItem.id.equals("rename")) {
-                clans.messageInChat(e.getWhoClicked(), "commands.storage.awaiting-name-input", null);
+                clans.messageInChat(e.getWhoClicked(), "storage.awaiting-name-input", null);
 
                 MenuManager.closeInventory(e.getWhoClicked());
 
                 MenuManager.performActionAfterTyping(e.getWhoClicked().getUniqueId(), message -> {
                     clans.databaseConnection.editStorageName(clanName, this.index, message);
-                    clans.messageInChat(e.getWhoClicked(), "commands.storage.renamed", Map.ofEntries(Map.entry("%new_name%", message)));
+                    clans.messageInChat(e.getWhoClicked(), "storage.renamed", Map.ofEntries(Map.entry("%new_name%", message)));
                     MenuManager.open(e.getWhoClicked(), new StorageContentsMenu(clans, this.index)); // re-open this menu
                 });
             } else if (clickedLayoutItem.id.equals("color")) {
-                clans.messageInChat(e.getWhoClicked(), "commands.storage.awaiting-color-input", null);
+                clans.messageInChat(e.getWhoClicked(), "storage.awaiting-color-input", null);
 
                 MenuManager.closeInventory(e.getWhoClicked());
 
                 MenuManager.performActionAfterTyping(e.getWhoClicked().getUniqueId(), message -> {
-                    clans.databaseConnection.editStorageColor(clanName, this.index, DyeColor.valueOf(message.toUpperCase()));
-                    clans.messageInChat(e.getWhoClicked(), "commands.storage.recolored", Map.ofEntries(Map.entry("%new_color%", message)));
+                    try {
+                        clans.databaseConnection.editStorageColor(clanName, this.index, DyeColor.valueOf(message.toUpperCase()));
+                        clans.messageInChat(e.getWhoClicked(), "storage.recolored", Map.ofEntries(Map.entry("%new_color%", message)));
+                    } catch (Exception ex) {
+                        clans.messageInChat(e.getWhoClicked(), "storage.couldnt-recolor", Map.ofEntries(Map.entry("%new_color%", message)));
+                    }
                     MenuManager.open(e.getWhoClicked(), new StorageContentsMenu(clans, this.index)); // re-open this menu
                 });
             }

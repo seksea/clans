@@ -24,7 +24,7 @@ public class NoClanMainMenu extends BaseMenu {
 
         if (clickedItem.id != null) {
             if (clickedItem.id.equals("new")) {
-                clans.messageInChat(e.getWhoClicked(), "commands.new.awaiting-input", null);
+                clans.messageInChat(e.getWhoClicked(), "new.awaiting-input", null);
 
                 MenuManager.closeInventory(player);
 

@@ -9,6 +9,7 @@ import me.sekc.clans.commands.BaseCommand;
 import me.sekc.clans.gui.menus.MainMenu;
 import me.sekc.clans.gui.MenuManager;
 import me.sekc.clans.gui.menus.NoClanMainMenu;
+import me.sekc.clans.gui.menus.OwnerMainMenu;
 
 import java.util.UUID;
 
@@ -21,8 +22,11 @@ public class GUICommand extends BaseCommand {
                     if (clans.databaseConnection.getPlayerClan(playerUUID).isEmpty()) {
                         // not in a clan, open the `No Clan` main menu
                         MenuManager.open(ctx.getSource().getExecutor(), new NoClanMainMenu(clans));
+                    } else if (clans.databaseConnection.getClanOwnedByPlayer(playerUUID) != null){
+                        // owner of a clan, open the owner main menu
+                        MenuManager.open(ctx.getSource().getExecutor(), new OwnerMainMenu(clans));
                     } else {
-                        // in a clan, open the normal main menu
+                        // member of a clan, open the normal main menu
                         MenuManager.open(ctx.getSource().getExecutor(), new MainMenu(clans));
                     }
 

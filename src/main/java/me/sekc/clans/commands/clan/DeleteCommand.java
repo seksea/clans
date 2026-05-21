@@ -27,18 +27,18 @@ public class DeleteCommand extends BaseCommand {
                 String clanName = clans.databaseConnection.getPlayerClan(ownerUUID);
 
                 if (clanName.isEmpty()) {
-                    clans.messageInChat(ctx.getSource().getExecutor(), "commands.delete.not-in-clan", null);
+                    clans.messageInChat(ctx.getSource().getExecutor(), "delete.not-in-clan", null);
                     return Command.SINGLE_SUCCESS;
                 }
 
                 if (!clans.databaseConnection.getClanOwnedByPlayer(ownerUUID).equals(clanName)) {
-                    clans.messageInChat(ctx.getSource().getExecutor(), "commands.delete.not-owner-of-clan", null);
+                    clans.messageInChat(ctx.getSource().getExecutor(), "delete.not-owner-of-clan", null);
                     return Command.SINGLE_SUCCESS;
                 }
 
                 clans.databaseConnection.deleteClan(clanName);
 
-                clans.messageInChat(ctx.getSource().getExecutor(), "commands.delete.deleted-clan",
+                clans.messageInChat(ctx.getSource().getExecutor(), "delete.deleted-clan",
                         Map.ofEntries(Map.entry("%clan_name%", clanName)));
 
                 ((Player)ctx.getSource().getExecutor()).updateCommands(); // so any clan related commands from being in a clan disappear

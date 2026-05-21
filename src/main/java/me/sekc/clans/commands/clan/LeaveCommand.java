@@ -27,18 +27,18 @@ public class LeaveCommand extends BaseCommand {
                 String clanName = clans.databaseConnection.getPlayerClan(playerUUID);
 
                 if (clanName.isEmpty()) {
-                    clans.messageInChat(ctx.getSource().getExecutor(), "commands.leave.not-in-clan", null);
+                    clans.messageInChat(ctx.getSource().getExecutor(), "leave.not-in-clan", null);
                     return Command.SINGLE_SUCCESS;
                 }
 
                 if (clans.databaseConnection.getClanOwnedByPlayer(playerUUID) != null) {
-                    clans.messageInChat(ctx.getSource().getExecutor(), "commands.leave.owner-of-clan", null);
+                    clans.messageInChat(ctx.getSource().getExecutor(), "leave.owner-of-clan", null);
                     return Command.SINGLE_SUCCESS;
                 }
 
                 clans.databaseConnection.removePlayerFromClan(clanName, playerUUID);
 
-                clans.messageInChat(ctx.getSource().getExecutor(), "commands.leave.left-clan",
+                clans.messageInChat(ctx.getSource().getExecutor(), "leave.left-clan",
                         Map.ofEntries(Map.entry("%clan_name%", clanName)));
 
                 if (ctx.getSource().getExecutor() instanceof Player player) {

@@ -26,7 +26,7 @@ public class ManageCommand extends BaseCommand {
                 .then(Commands.literal(varName).executes(ctx -> {
                             String clanName = clans.databaseConnection.getClanOwnedByPlayer(ctx.getSource().getExecutor().getUniqueId());
 
-                            clans.commandResponseInChat(ctx.getSource(), "commands.manage.get-var",
+                            clans.commandResponseInChat(ctx.getSource(), "manage.get-var",
                                     Map.ofEntries(
                                             Map.entry("%var_name%", varName),
                                             Map.entry("%clan_name%", clanName),
@@ -40,7 +40,7 @@ public class ManageCommand extends BaseCommand {
 
                                     setSetting.set(clanName, newValue);
 
-                                    clans.commandResponseInChat(ctx.getSource(), "commands.manage.update-var",
+                                    clans.commandResponseInChat(ctx.getSource(), "manage.update-var",
                                             Map.ofEntries(
                                                     Map.entry("%var_name%", varName),
                                                     Map.entry("%clan_name%", clanName),

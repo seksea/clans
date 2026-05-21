@@ -30,7 +30,7 @@ public class LeaveMenu extends BaseMenu {
                 MenuManager.closeInventory(e.getWhoClicked());
 
                 if (clans.databaseConnection.getClanOwnedByPlayer(e.getWhoClicked().getUniqueId()) != null) {
-                    clans.messageInChat(e.getWhoClicked(), "commands.leave.owner-of-clan", null);
+                    clans.messageInChat(e.getWhoClicked(), "leave.owner-of-clan", null);
                     return;
                 }
 

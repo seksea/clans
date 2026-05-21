@@ -23,23 +23,23 @@ public class NewCommand extends BaseCommand {
                     UUID ownerUUID = ctx.getSource().getExecutor().getUniqueId();
 
                     if (clanName.length() >= 32) {
-                        clans.commandResponseInChat(ctx.getSource(), "commands.new.clan-too-long", null);
+                        clans.commandResponseInChat(ctx.getSource(), "new.clan-too-long", null);
                         return Command.SINGLE_SUCCESS;
                     }
 
                     if (clans.databaseConnection.clanExists(clanName)) {
-                        clans.commandResponseInChat(ctx.getSource(), "commands.new.clan-already-exists", null);
+                        clans.commandResponseInChat(ctx.getSource(), "new.clan-already-exists", null);
                         return Command.SINGLE_SUCCESS;
                     }
 
                     if (!clans.databaseConnection.getPlayerClan(ownerUUID).isEmpty()) {
-                        clans.commandResponseInChat(ctx.getSource(), "commands.new.already-in-clan", null);
+                        clans.commandResponseInChat(ctx.getSource(), "new.already-in-clan", null);
                         return Command.SINGLE_SUCCESS;
                     }
 
                     clans.databaseConnection.createNewClan(clanName, ownerUUID); // creates clan and adds owner to it
 
-                    clans.commandResponseInChat(ctx.getSource(), "commands.new.created-new-clan",
+                    clans.commandResponseInChat(ctx.getSource(), "new.created-new-clan",
                             Map.ofEntries(
                                     Map.entry("%clan_name%", clanName)
                             ));
