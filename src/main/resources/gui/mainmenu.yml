@@ -1,21 +1,29 @@
-title: "七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七七"
+title: ""
 layout: |
   . . . . . . . . .
   . . . . . . . . .
   . . . . . . . . .
   . . . . . . . . .
-  . S I . . . . L .
+  . F S I . . . L .
   . . . . . . . . .
 items:
+  F:
+    id: "furnace"
+    material: FURNACE
+    name: "<bold>Furnace</bold>"
+    lore: "<grey>Burn items to rank up your clan.</grey>"
   S:
+    id: "storage"
     material: CHEST
     name: "<bold>Storage</bold>"
     lore: "<grey>Access the shared storage.</grey>"
   I:
+    id: "paper"
     material: PAPER
     name: "<bold>Invite</bold>"
     lore: "<grey>Invite a new player to the clan.</grey>"
   L:
+    id: "leave"
     material: BARRIER
     name: "<red><bold>Leave</bold></red>"
     lore: "<grey>Leave this clan.</grey>"

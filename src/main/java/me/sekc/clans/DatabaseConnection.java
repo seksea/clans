@@ -58,12 +58,13 @@ public class DatabaseConnection {
             PreparedStatement stmt = connection.prepareStatement(
                     "SELECT name FROM clans"
             );
-            ResultSet results = stmt.executeQuery();
-            List<String> clanNameList = new ArrayList<>();
-            while (results.next()) {
-                clanNameList.add(results.getString("name"));
+            try (ResultSet results = stmt.executeQuery()) {
+                List<String> clanNameList = new ArrayList<>();
+                while (results.next()) {
+                    clanNameList.add(results.getString("name"));
+                }
+                return clanNameList;
             }
-            return clanNameList;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -78,16 +79,17 @@ public class DatabaseConnection {
     }
     public List<ClanPlayerData> getPlayersInClan(String clan) {
         try {
-            ResultSet results = connection.createStatement().executeQuery(
+            try (ResultSet results = connection.createStatement().executeQuery(
                     "SELECT uuid FROM " + sanitiseString("clan_" + clan + "_members")
-            );
+            )) {
 
-            List<ClanPlayerData> playerList = new ArrayList<>();
-            while (results.next()) {
-                UUID playerUUID = UUID.fromString(results.getString("uuid"));
-                playerList.add(new ClanPlayerData(Bukkit.getOfflinePlayer(playerUUID)));
+                List<ClanPlayerData> playerList = new ArrayList<>();
+                while (results.next()) {
+                    UUID playerUUID = UUID.fromString(results.getString("uuid"));
+                    playerList.add(new ClanPlayerData(Bukkit.getOfflinePlayer(playerUUID)));
+                }
+                return playerList;
             }
-            return playerList;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -100,9 +102,10 @@ public class DatabaseConnection {
             );
             stmt.setString(1, "clan_" + clan + "_members");
             stmt.setString(2, playerUUID.toString());
-            ResultSet results = stmt.executeQuery();
+            try (ResultSet results = stmt.executeQuery()) {
 
             return new ClanPlayerData(Bukkit.getOfflinePlayer(playerUUID));
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -179,7 +182,7 @@ public class DatabaseConnection {
 
             // Delete clan members table
             connection.createStatement().executeUpdate(
-                    "DROP TABLE ?"
+                    "DROP TABLE " + sanitiseString("clan_" + name + "_members")
             );
 
             // Remove all players' clan
@@ -200,8 +203,9 @@ public class DatabaseConnection {
                     "SELECT owner_uuid FROM clans WHERE name=?"
             );
             stmt.setString(1, name);
-            ResultSet results = stmt.executeQuery();
-            return UUID.fromString(results.getString("owner_uuid"));
+            try (ResultSet results = stmt.executeQuery()) {
+                return UUID.fromString(results.getString("owner_uuid"));
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -213,8 +217,9 @@ public class DatabaseConnection {
                     "SELECT 1 FROM clans WHERE name=?"
             );
             stmt.setString(1, name);
-            ResultSet results = stmt.executeQuery();
-            return results.isBeforeFirst(); // false if empty
+            try (ResultSet results = stmt.executeQuery()) {
+                return results.isBeforeFirst(); // false if empty
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -226,9 +231,10 @@ public class DatabaseConnection {
                     "SELECT description FROM clans WHERE name=?"
             );
             stmt.setString(1, name);
-            ResultSet results = stmt.executeQuery();
-            String description = results.getString("description");
-            return description == null ? "" : description;
+            try (ResultSet results = stmt.executeQuery()) {
+                String description = results.getString("description");
+                return description == null ? "" : description;
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -269,8 +275,9 @@ public class DatabaseConnection {
                     "SELECT 1 FROM players WHERE uuid=?"
             );
             stmt.setString(1, playerUUID.toString());
-            ResultSet results = stmt.executeQuery();
-            return results.isBeforeFirst(); // false if empty
+            try (ResultSet results = stmt.executeQuery()) {
+                return results.isBeforeFirst(); // false if empty
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -282,8 +289,9 @@ public class DatabaseConnection {
                     "SELECT experience FROM players WHERE uuid=?"
             );
             stmt.setString(1, playerUUID.toString());
-            ResultSet results = stmt.executeQuery();
-            return results.getInt("experience");
+            try(ResultSet results = stmt.executeQuery()) {
+                return results.getInt("experience");
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -308,9 +316,10 @@ public class DatabaseConnection {
                     "SELECT clan FROM players WHERE uuid=?"
             );
             stmt.setString(1, playerUUID.toString());
-            ResultSet results = stmt.executeQuery();
-            String clan = results.getString("clan");
-            return clan == null ? "" : clan;
+            try (ResultSet results = stmt.executeQuery()) {
+                String clan = results.getString("clan");
+                return clan == null ? "" : clan;
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -322,13 +331,14 @@ public class DatabaseConnection {
                     "SELECT clan FROM players WHERE uuid=?"
             );
             stmt.setString(1, playerUUID.toString());
-            ResultSet results = stmt.executeQuery();
-            String clan = results.getString("clan");
+            try (ResultSet results = stmt.executeQuery()) {
+                String clan = results.getString("clan");
 
-            if (clan == null || clan.isEmpty()) return null;
+                if (clan == null || clan.isEmpty()) return null;
 
-            UUID owner = getClanOwner(clan);
-            return owner.equals(playerUUID) ? clan : null;
+                UUID owner = getClanOwner(clan);
+                return owner.equals(playerUUID) ? clan : null;
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

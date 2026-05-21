@@ -16,6 +16,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -109,12 +111,20 @@ public final class Clans extends JavaPlugin {
         return PlaceholderAPI.setPlaceholders(offlinePlayer, original.stripTrailing()); // strip trailing as multiline yaml strings always end with unnecessary newline
     }
 
+    public void messageInChat(Entity playerEntity, String messageYmlPath, Map<String, String> customPlaceholders) {
+        if (playerEntity instanceof Player player) {
+            player.sendMessage(
+                    MiniMessage.miniMessage().deserialize(
+                            chatMessageFormat + "<reset>" + getMessageWithPlaceholders(player.getUniqueId(), messageYmlPath, customPlaceholders)
+                    )
+            );
+        } else {
+            Clans.warn("Tried to send message to non-player.");
+        }
+    }
+
     public void commandResponseInChat(CommandSourceStack source, String messageYmlPath, Map<String, String> customPlaceholders) {
-        source.getSender().sendMessage(
-                MiniMessage.miniMessage().deserialize(
-                        chatMessageFormat + "<reset>" + getMessageWithPlaceholders(source.getExecutor().getUniqueId(), messageYmlPath, customPlaceholders)
-                )
-        );
+        messageInChat(source.getExecutor(), messageYmlPath, customPlaceholders);
     }
 
     static public void log(String msg) {

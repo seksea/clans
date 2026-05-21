@@ -1,0 +1,25 @@
+title: ""
+layout: |
+  B B B B B B B B B
+  B B B B B B B B B
+  B B B B B B B B B
+  B B B N B Y B B B
+  B B B B B B B B B
+  B B B B B B B B B
+items:
+  Y:
+    id: "yes"
+    material: LIME_CONCRETE
+    name: "<bold>Leave clan</bold>"
+    lore: "<grey>Are you sure you wish to leave this clan?</grey>"
+  N:
+    id: "no"
+    material: RED_CONCRETE
+    name: "<bold>Stay in the clan</bold>"
+    lore: "<grey>You do not wish to leave the clan.</grey>"
+  B:
+    id: ""
+    material: BARRIER
+    name: ""
+    lore: ""
+  

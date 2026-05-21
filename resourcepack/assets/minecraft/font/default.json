@@ -2,17 +2,31 @@
   "providers": [
     {
       "type": "bitmap",
-      "file": "minecraft:clans_plugin/main_menu.png",
-      "ascent": 73,
-      "height": 256,
+      "file": "minecraft:clans_plugin/empty.png",
+      "ascent": -2000,
+      "height": -3,
       "chars": [""]
     },
     {
       "type": "bitmap",
-      "file": "minecraft:clans_plugin/empty.png",
-      "ascent": -2000,
-      "height": -3,
-      "chars": ["七"]
+      "file": "minecraft:clans_plugin/blank_dark.png",
+      "ascent": 73,
+      "height": 256,
+      "chars": [""]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:clans_plugin/main_menu.png",
+      "ascent": 73,
+      "height": 256,
+      "chars": [""]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:clans_plugin/storage_menu.png",
+      "ascent": 73,
+      "height": 256,
+      "chars": [""]
     }
   ]
 }

@@ -1,0 +1,19 @@
+title: ""
+layout: |
+  . . . . . . . . .
+  . . . . . . . . .
+  . . . . . . . . .
+  . . . . . . . . .
+  . . . N . I . . .
+  . . . . . . . . .
+items:
+  N:
+    id: "new"
+    material: YELLOW_CONCRETE
+    name: "<bold>Create new clan</bold>"
+    lore: "<grey>Create your very own clan.</grey>"
+  I:
+    id: "invites"
+    material: PAPER
+    name: "<bold>Invites</bold>"
+    lore: "<grey>Check if you have been invited to any clans.</grey>"

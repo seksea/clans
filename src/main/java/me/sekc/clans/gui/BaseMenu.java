@@ -25,14 +25,17 @@ import java.util.*;
 public class BaseMenu {
     static boolean replaceConfigs = true;
 
+    public Clans clans;
     public YamlConfiguration menuConfiguration;
 
     protected class LayoutItem {
         public Material material;
+        public String id;
         public String name;
         public String lore;
-        LayoutItem(Material material, String name, String lore) {
+        LayoutItem(Material material, String id, String name, String lore) {
             this.material = material;
+            this.id = id;
             this.name = name;
             this.lore = lore;
         }
@@ -61,6 +64,8 @@ public class BaseMenu {
     protected List<LayoutItem> layoutArray = new ArrayList<>();
 
     public BaseMenu(Clans clans) {
+        this.clans = clans;
+
         // Load the yml config
         clans.saveResource(getConfigPath(), /* replace */ replaceConfigs);
 
@@ -90,8 +95,9 @@ public class BaseMenu {
             // Get the data for this item
             Material material = Material.valueOf(menuConfiguration.getString("items."+layoutChar+".material"));
             String name = menuConfiguration.getString("items."+layoutChar+".name");
+            String id = menuConfiguration.getString("items."+layoutChar+".id");
             String lore = menuConfiguration.getString("items."+layoutChar+".lore");
-            layoutArray.add(new LayoutItem(material, name, lore));
+            layoutArray.add(new LayoutItem(material, id, name, lore));
         }
 
         // Add the items to the inventory
@@ -110,7 +116,7 @@ public class BaseMenu {
     public void itemClicked(InventoryClickEvent e) {
         e.setCancelled(true);
 
-        if (e.getSlot() >= layoutArray.size() || e.getSlot() >= 0)
+        if (e.getSlot() >= layoutArray.size() || e.getSlot() <= 0)
             return; // clicking outside the inventory is slot -999
 
         LayoutItem item = layoutArray.get(e.getSlot());
