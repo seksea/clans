@@ -59,8 +59,13 @@ public class MenuManager {
         if (openGUI != null) {
             //Clans.log("rawSlot: " + e.getRawSlot() + "   slot: " + e.getSlot());
 
-            if (e.getClickedInventory() == null || e.getClickedInventory().getType().equals(InventoryType.PLAYER))
+            if (e.getClickedInventory() == null)
                 return; // Let the player click around their own inventory
+
+            if (e.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
+                if (e.isShiftClick()) e.setCancelled(true); // don't allow shift clicks in inventory
+                return; // Don't send clicks in own inventory to GUIs
+            }
 
             openGUI.itemClicked(e);
         }
