@@ -26,25 +26,7 @@ public class LeaveMenu extends BaseMenu {
         if (clickedItem.id.equals("yes")) { // leave the clan
             MenuManager.closeInventory(e.getWhoClicked());
 
-            UUID playerUUID = e.getWhoClicked().getUniqueId();
-            String clanName = clans.databaseConnection.getPlayerClan(playerUUID);
-
-            if (clanName.isEmpty()) {
-                clans.messageInChat(e.getWhoClicked(), "commands.leave.not-in-clan", null);
-                return;
-            }
-
-            if (clans.databaseConnection.getClanOwnedByPlayer(playerUUID) != null) {
-                clans.messageInChat(e.getWhoClicked(), "commands.leave.owner-of-clan", null);
-                return;
-            }
-
-            clans.databaseConnection.removePlayerFromClan(clanName, playerUUID);
-
-            clans.messageInChat(e.getWhoClicked(), "commands.leave.left-clan",
-                    Map.ofEntries(Map.entry("%clan_name%", clanName)));
-
-            ((Player) e.getWhoClicked()).updateCommands(); // so any clan related commands from being in a clan disappear
+            ((Player)e.getWhoClicked()).performCommand("clan leave yes_i_am_sure"); // perform the command
         } else if (clickedItem.id.equals("no")) { // ignore
             MenuManager.closeInventory(e.getWhoClicked());
         }

@@ -5,7 +5,7 @@ commands:
     deleted-clan: "Successfully deleted clan <b>%clan_name%</b>."
   info:
     info-message: |
-        <green> ==================================</green>
+        <green>===================================</green>
         Info for clan <b>%clan_name%</b>:
         <grey>-----------------------------------------</grey>
         Description: <grey>%clan_description%</grey>
@@ -22,5 +22,7 @@ commands:
     get-var: "<b>%var_name%</b> of clan <b>%clan_name%</b> is: <grey>%value%</grey>"
   new:
     awaiting-input: "Type the name of your new clan in chat:"
+    clan-too-long: "Can't create clan as the name was too long."
+    clan-already-exists: "Can't create clan as a clan with that name already exists."
     already-in-clan: "Can't create clan as you are already in another clan, use <hover:show_text:\"Click me!\"><click:run_command:clan leave><b>/clan leave</b></click></hover> first."
     created-new-clan: "Created new clan <b>%clan_name%</b>."

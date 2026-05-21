@@ -22,6 +22,16 @@ public class NewCommand extends BaseCommand {
                     String clanName = ctx.getArgument("name", String.class);
                     UUID ownerUUID = ctx.getSource().getExecutor().getUniqueId();
 
+                    if (clanName.length() >= 32) {
+                        clans.commandResponseInChat(ctx.getSource(), "commands.new.clan-too-long", null);
+                        return Command.SINGLE_SUCCESS;
+                    }
+
+                    if (clans.databaseConnection.clanExists(clanName)) {
+                        clans.commandResponseInChat(ctx.getSource(), "commands.new.clan-already-exists", null);
+                        return Command.SINGLE_SUCCESS;
+                    }
+
                     if (!clans.databaseConnection.getPlayerClan(ownerUUID).isEmpty()) {
                         clans.commandResponseInChat(ctx.getSource(), "commands.new.already-in-clan", null);
                         return Command.SINGLE_SUCCESS;

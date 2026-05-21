@@ -25,25 +25,7 @@ public class DeleteMenu extends BaseMenu {
         if (clickedItem.id.equals("yes")) { // delete the clan
             MenuManager.closeInventory(e.getWhoClicked());
 
-            UUID ownerUUID = e.getWhoClicked().getUniqueId();
-            String clanName = clans.databaseConnection.getPlayerClan(ownerUUID);
-
-            if (clanName.isEmpty()) {
-                clans.messageInChat(e.getWhoClicked(), "commands.delete.not-in-clan", null);
-                return;
-            }
-
-            if (!clans.databaseConnection.getClanOwnedByPlayer(ownerUUID).equals(clanName)) {
-                clans.messageInChat(e.getWhoClicked(), "commands.delete.not-owner-of-clan", null);
-                return;
-            }
-
-            clans.databaseConnection.deleteClan(clanName);
-
-            clans.messageInChat(e.getWhoClicked(), "commands.delete.deleted-clan",
-                    Map.ofEntries(Map.entry("%clan_name%", clanName)));
-
-            ((Player)e.getWhoClicked()).updateCommands(); // so any clan related commands from being in a clan disappear
+            ((Player)e.getWhoClicked()).performCommand("clan delete yes_i_am_sure"); // perform the command
         } else if (clickedItem.id.equals("no")) { // ignore
             MenuManager.closeInventory(e.getWhoClicked());
         }
