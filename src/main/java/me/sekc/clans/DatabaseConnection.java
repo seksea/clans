@@ -1,8 +1,13 @@
 package me.sekc.clans;
 
-import it.unimi.dsi.fastutil.Pair;
+import com.google.gson.*;
+import de.tr7zw.nbtapi.NBT;
+import de.tr7zw.nbtapi.NBTItem;
 import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.inventory.ItemStack;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,6 +22,13 @@ public class DatabaseConnection {
 
     String clanMembersTableSchema = " ("
             + "   uuid     VARCHAR(36) NOT NULL PRIMARY KEY" // foreign key to players table
+            + ")";
+
+    String clanStorageSchema = " ("
+            + "   id               INTEGER PRIMARY KEY,"
+            + "   storage_name     VARCHAR(32) NOT NULL DEFAULT 'Unnamed',"
+            + "   color     VARCHAR(32) NOT NULL DEFAULT 'WHITE',"
+            + "   data     TEXT NOT NULL DEFAULT '[" + (new String(new char[(9*5)-1]).replace("\0", "{},")) + "{}]'"
             + ")";
 
     Connection connection;
@@ -165,6 +177,13 @@ public class DatabaseConnection {
                     "CREATE TABLE IF NOT EXISTS " + sanitiseString("clan_" + name + "_members") + clanMembersTableSchema
             );
 
+            // Create table to store clan storage
+            connection.createStatement().executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS " + sanitiseString("clan_" + name + "_storage") + clanStorageSchema
+            );
+
+            addStorageToClan(name); // Add a single storage slot to the clan to start with
+
             addPlayerToClan(name, ownerUUID); // add the owner as a member
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -183,6 +202,11 @@ public class DatabaseConnection {
             // Delete clan members table
             connection.createStatement().executeUpdate(
                     "DROP TABLE " + sanitiseString("clan_" + name + "_members")
+            );
+
+            // Delete clan storage table
+            connection.createStatement().executeUpdate(
+                    "DROP TABLE " + sanitiseString("clan_" + name + "_storage")
             );
 
             // Remove all players' clan
@@ -247,6 +271,142 @@ public class DatabaseConnection {
             );
             stmt.setString(1, description);
             stmt.setString(2, name);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static class StorageSlot {
+        public String title;
+        public DyeColor color;
+        public List<NBTItem> nbtData;
+
+        StorageSlot(String title, DyeColor color, List<NBTItem> nbtData) {
+            this.title = title;
+            this.color = color;
+            this.nbtData = nbtData;
+        }
+
+        String serialiseNBTData() {
+            JsonArray jsonArray = new JsonArray();
+
+            for (NBTItem nbtItem : nbtData) {
+                JsonObject jsonObject = new JsonObject();
+
+                if (nbtItem == null) {
+                    jsonArray.add(jsonObject);
+                    continue;
+                }
+
+                ItemStack stack = nbtItem.getItem();
+                jsonObject.add("material", new JsonPrimitive(stack.getType().name()));
+                jsonObject.add("amount", new JsonPrimitive(stack.getAmount()));
+                jsonObject.add("data", new JsonPrimitive(nbtItem.toString()));
+
+                jsonArray.add(jsonObject);
+            }
+
+            return jsonArray.getAsString();
+        }
+
+        static StorageSlot fromSerialised(String title, String color, String jsonData) {
+            List<NBTItem> nbtData = new ArrayList<>();
+
+            Gson gson = new Gson(); // Load each item as a string from the json array
+            JsonArray jsonArray = gson.fromJson(jsonData, JsonArray.class);
+
+            for (JsonElement elem : jsonArray.asList()) {
+                if (elem instanceof JsonObject obj) {
+                    JsonElement material = obj.get("material");
+                    JsonElement amount = obj.get("amount");
+                    JsonElement data = obj.get("data");
+
+                    if (material != null && amount != null && data != null)
+                    {
+                        NBTItem nbtItem = new NBTItem(ItemStack.of(Material.valueOf(material.getAsString()), amount.getAsInt()));
+                        nbtItem.mergeCompound(NBT.parseNBT(data.getAsString()));
+
+                        nbtData.add(nbtItem);
+                    } else {
+                        nbtData.add(null);
+                    }
+                } else {
+                    nbtData.add(null);
+                }
+            }
+
+            return new StorageSlot(title, DyeColor.valueOf(color), nbtData);
+        }
+    }
+    public List<StorageSlot> getStorageListFromClan(String clan) {
+        try {
+            try (ResultSet results = connection.createStatement().executeQuery(
+                    "SELECT storage_name, color, data FROM " + sanitiseString("clan_" + clan + "_storage")
+            )) {
+
+                List<StorageSlot> storageList = new ArrayList<>();
+                while (results.next()) {
+                    storageList.add(StorageSlot.fromSerialised(
+                            results.getString("storage_name"),
+                            results.getString("color"),
+                            results.getString("data")));
+                }
+                return storageList;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public StorageSlot getStorageFromClan(String clan, int index) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT storage_name, color, data FROM " + sanitiseString("clan_" + clan + "_storage") + " WHERE id=?"
+            );
+            stmt.setInt(1, index+1); // sql index starts from 1
+            try (ResultSet results = stmt.executeQuery()) {
+                return StorageSlot.fromSerialised(
+                        results.getString("storage_name"),
+                        results.getString("color"),
+                        results.getString("data"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addStorageToClan(String clan) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "INSERT INTO " + sanitiseString("clan_" + clan + "_storage") + " DEFAULT VALUES"
+            );
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void editStorageName(String clan, int index, String newName) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "UPDATE " + sanitiseString("clan_" + clan + "_storage") + " SET storage_name=? WHERE id=?"
+            );
+            stmt.setString(1, newName);
+            stmt.setInt(2, index+1); // sql index starts from 1
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void editStorageColor(String clan, int index, DyeColor newColor) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "UPDATE " + sanitiseString("clan_" + clan + "_storage") + " SET color=? WHERE id=?"
+            );
+            stmt.setString(1, newColor.name());
+            stmt.setInt(2, index+1); // sql index starts from 1
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

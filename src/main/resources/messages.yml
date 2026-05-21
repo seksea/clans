@@ -26,3 +26,8 @@ commands:
     clan-already-exists: "Can't create clan as a clan with that name already exists."
     already-in-clan: "Can't create clan as you are already in another clan, use <hover:show_text:\"Click me!\"><click:run_command:clan leave><b>/clan leave</b></click></hover> first."
     created-new-clan: "Created new clan <b>%clan_name%</b>."
+  storage:
+    awaiting-name-input: "Type the new name of your storage in chat:"
+    renamed: "Successfully renamed the storage to <b>%new_name%</b>"
+    awaiting-color-input: "Type the name of the new color for your storage in chat:"
+    recolored: "Successfully recoloured the storage to <b>%new_color%</b>"

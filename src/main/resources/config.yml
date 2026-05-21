@@ -5,7 +5,7 @@
 #   888           888   .oP"888   888   888  `"Y88b.
 #   `88b    ooo   888  d8(  888   888   888  o.  )88b
 #    `Y8bood8P'  o888o `Y888""8o o888o o888o 8""888P'
-#                  The ultimate clan+leveling plugin
+#                      The ultimate clan plugin
 #                                               sekc
 #  ===================================================
 
@@ -13,4 +13,6 @@
 clan-message-format: "<grey>[</grey><gradient:#bb88d0:#aa88ff>clans</gradient><grey>]</grey> "
 
 database:
+  # The path to the database (leave default if you want SQLite (no setup required) local database,
+  # change this if you want to use a different SQL database)
   filepath: "jdbc:sqlite:plugins/clans/database.db"

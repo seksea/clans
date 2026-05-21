@@ -18,6 +18,8 @@ public class MainMenu extends BaseMenu {
 
     @Override
     protected void layoutItemClicked(LayoutItem clickedItem, InventoryClickEvent e) {
+        super.layoutItemClicked(clickedItem, e);
+
         if (clickedItem.id.equals("storage")) {
             MenuManager.open(e.getWhoClicked(), new StorageMenu(clans));
         }

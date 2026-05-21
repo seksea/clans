@@ -30,7 +30,7 @@ public class MenuManager {
 
             Inventory gui = Bukkit.getServer().createInventory(player, 9*6, Component.text(menu.getTitle()).color(TextColor.color(255, 255, 255)));
 
-            menu.fillContent(gui);
+            menu.fillContent(player, gui);
 
             player.openInventory(gui);
         } else {
@@ -59,7 +59,7 @@ public class MenuManager {
         if (openGUI != null) {
             //Clans.log("rawSlot: " + e.getRawSlot() + "   slot: " + e.getSlot());
 
-            if (e.getClickedInventory().getType().equals(InventoryType.PLAYER))
+            if (e.getClickedInventory() == null || e.getClickedInventory().getType().equals(InventoryType.PLAYER))
                 return; // Let the player click around their own inventory
 
             openGUI.itemClicked(e);

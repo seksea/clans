@@ -2,6 +2,9 @@ package me.sekc.clans.gui;
 
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.sekc.clans.Clans;
+import me.sekc.clans.gui.menus.MainMenu;
+import me.sekc.clans.gui.menus.NoClanMainMenu;
+import me.sekc.clans.gui.menus.StorageMenu;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -28,16 +31,21 @@ public class BaseMenu {
     public Clans clans;
     public YamlConfiguration menuConfiguration;
 
-    protected class LayoutItem {
+    protected class LayoutItem { // an item that has been parsed from a yaml file
         public Material material;
         public String id;
         public String name;
         public String lore;
+        public boolean custom = false; // is it a `_`?
+
         LayoutItem(Material material, String id, String name, String lore) {
             this.material = material;
             this.id = id;
             this.name = name;
             this.lore = lore;
+        }
+        LayoutItem(boolean custom) {
+            this.custom = custom;
         }
 
         public ItemStack getItemStack() {
@@ -61,6 +69,10 @@ public class BaseMenu {
             return item;
         }
     }
+
+    // The layout, contains an item for every slot in the custom gui
+    //  "." = null
+    //  "_" = LayoutItem.custom = true
     protected List<LayoutItem> layoutArray = new ArrayList<>();
 
     public BaseMenu(Clans clans) {
@@ -81,7 +93,7 @@ public class BaseMenu {
 
     public String getConfigPath() { return ""; } // override me to have the yaml path
 
-    public void fillContent(Inventory gui) {
+    public void fillContent(Player player, Inventory gui) {
         // Parse the items from yml
         String layoutString = menuConfiguration.getString("layout").strip();
         List<String> layoutChars = new ArrayList<>(Arrays.asList(layoutString.split("\\n| ")));
@@ -89,6 +101,10 @@ public class BaseMenu {
         for (String layoutChar : layoutChars) {
             if (layoutChar.equals(".")) {
                 layoutArray.add(null); // Nothing in this spot
+                continue;
+            }
+            if (layoutChar.equals("_")) {
+                layoutArray.add(new LayoutItem(true)); // Custom item in this slot, override this func to customise these
                 continue;
             }
 
@@ -103,25 +119,48 @@ public class BaseMenu {
         // Add the items to the inventory
         int idx = 0;
         for (LayoutItem layoutItem : layoutArray) {
-            if (layoutItem != null)
-                gui.setItem(idx, layoutItem.getItemStack());
+            if (layoutItem == null || layoutItem.custom) {
+                // Don't set this item here, if it is custom then override this func and iterate over layoutArray to fill the custom items yourself
+                idx++;
+                continue;
+            }
+
+            gui.setItem(idx, layoutItem.getItemStack());
             idx++;
         }
     }
 
     protected void layoutItemClicked(LayoutItem clickedItem, InventoryClickEvent e) {
         // Override me!
+
+        // item ids that work everywhere!
+
+        if (clickedItem.id.equals("mainmenu")) {
+            if (clans.databaseConnection.getPlayerClan(e.getWhoClicked().getUniqueId()).isEmpty()) {
+                // not in a clan, open the `No Clan` main menu
+                MenuManager.open(e.getWhoClicked(), new NoClanMainMenu(clans));
+            } else {
+                // in a clan, open the normal main menu
+                MenuManager.open(e.getWhoClicked(), new MainMenu(clans));
+            }
+        }
     }
 
     public void itemClicked(InventoryClickEvent e) {
-        e.setCancelled(true);
-
-        if (e.getSlot() >= layoutArray.size() || e.getSlot() <= 0)
+        if (e.getSlot() >= layoutArray.size() || e.getSlot() < 0) {
+            e.setCancelled(true);
             return; // clicking outside the inventory is slot -999
+        }
 
         LayoutItem item = layoutArray.get(e.getSlot());
-        if (item != null)
+
+
+        if (item != null) {
+            e.setCancelled(!item.custom); // Don't cancel custom slots so we can handle it ourselves
             layoutItemClicked(item, e);
+        } else {
+            e.setCancelled(true);
+        }
     }
 
     public String getTitle() { return menuConfiguration.getString("title"); }

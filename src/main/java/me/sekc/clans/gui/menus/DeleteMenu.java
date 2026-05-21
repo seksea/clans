@@ -22,6 +22,8 @@ public class DeleteMenu extends BaseMenu {
 
     @Override
     protected void layoutItemClicked(LayoutItem clickedItem, InventoryClickEvent e) {
+        super.layoutItemClicked(clickedItem, e);
+
         if (clickedItem.id.equals("yes")) { // delete the clan
             MenuManager.closeInventory(e.getWhoClicked());
 

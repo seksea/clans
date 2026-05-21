@@ -49,7 +49,7 @@ public final class Clans extends JavaPlugin {
                 " 888           888   .oP\"888   888   888  `\"Y88b.  \n" +
                 " `88b    ooo   888  d8(  888   888   888  o.  )88b \n" +
                 "  `Y8bood8P'  o888o `Y888\"\"8o o888o o888o 8\"\"888P' \n" +
-                "                 The ultimate clan+leveling plugin \n" +
+                "                      The ultimate clan plugin\n" +
                 "==================================================="
         );
 

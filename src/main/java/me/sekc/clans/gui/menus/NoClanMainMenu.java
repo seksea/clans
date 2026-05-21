@@ -18,6 +18,8 @@ public class NoClanMainMenu extends BaseMenu {
 
     @Override
     protected void layoutItemClicked(LayoutItem clickedItem, InventoryClickEvent e) {
+        super.layoutItemClicked(clickedItem, e);
+
         Player player = (Player)e.getWhoClicked();
 
         if (clickedItem.id.equals("new")) {

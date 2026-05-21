@@ -14,13 +14,23 @@ layout: |
   _ _ _ _ _ _ _ _ _
   _ _ _ _ _ _ _ _ _
   _ _ _ _ _ _ _ _ _
-  B . . . . . . . .
+  B . . . . . . R C
 
 # Define the items to fill the layout with, the only thing that matters here is the "id", as that controls what
 # the button does, so don't change that, everything else is cosmetic and can be customised.
 items:
   B:
-    id: "mainmenu"
+    id: "back"
     material: BARRIER
     name: "<bold>Back</bold>"
-    lore: "<grey>Go back to the main menu.</grey>"
+    lore: "<grey>Go back to view all storages.</grey>"
+  R:
+    id: "rename"
+    material: NAME_TAG
+    name: "<bold>Rename</bold>"
+    lore: "<grey>Rename this storage.</grey>"
+  C:
+    id: "color"
+    material: WHITE_WOOL
+    name: "<bold>Change Color</bold>"
+    lore: "<grey>Change the color of this storage.</grey>"
