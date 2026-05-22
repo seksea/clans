@@ -210,4 +210,75 @@ public class BaseMenu {
 
         return -1; // -1 if not enough custom slots
     }
+
+    public interface SetItemInStorageRunnable {
+        // custom slot id is the count of all "_" before this, not raw slotID from inventory (so u can have borders and such)
+        public void set(ItemStack itemStack, int customSlotID);
+    }
+
+    protected void handleStorageClicked(LayoutItem clickedLayoutItem, InventoryClickEvent e, SetItemInStorageRunnable setItemInStorageRunnable) {
+        // Use this function in LayoutItemClicked to automatically treat all "_" chars as storage space
+        //  - when an item is taken or added to the inventory then it calls the Runnable with the itemstack and slotid (id ignoring non-"_" chars)
+        //  - handles right&left click, with&without an item on the cursor
+        //  - does not handle shift click as of right now (TODO)
+        if (clickedLayoutItem.custom) {
+            ItemStack clickedItemStack = e.getCurrentItem();
+
+            int customSlotId = this.slotIdToCustomSlotID(e.getSlot());
+            ItemStack cursor = e.getCursor();
+
+            // Handle inventory
+            if (e.isShiftClick()) {
+                e.setCancelled(true); // don't allow any shift clicks
+            } else if (customSlotId != -1) {
+                if (clickedItemStack == null || clickedItemStack.isEmpty()) {
+                    if (!cursor.isEmpty()) {
+                        // An item has been dragged into the UI, add it and uncancel the event
+                        ItemStack newItemStack = cursor.clone();
+
+                        if (e.isRightClick()) {
+                            newItemStack.setAmount(1); // if right click then add 1
+                        }
+
+                        setItemInStorageRunnable.set(newItemStack, customSlotId);
+                        e.setCancelled(false);
+                    } else {
+                        // An empty slot has been clicked with nothing in cursor, do nothing
+                    }
+                } else {
+                    if (!cursor.isEmpty()) {
+                        // An item has been dragged onto another item on the UI, add it and uncancel the event
+                        ItemStack newItemStack = cursor.clone();
+
+                        if (newItemStack.isSimilar(clickedItemStack)) {
+                            if (e.isRightClick()) {
+                                int newAmount = Math.clamp(clickedItemStack.getAmount()+1, 1, newItemStack.getMaxStackSize());
+                                newItemStack.setAmount(newAmount); // if right click and is same item then add 1
+                                e.setCancelled(false);
+                            }
+                            if (e.isLeftClick()) {
+                                int newAmount = Math.clamp(clickedItemStack.getAmount()+newItemStack.getAmount(), 1, newItemStack.getMaxStackSize());
+                                newItemStack.setAmount(newAmount); // if left click and is same item then add all that we can
+                                e.setCancelled(false);
+                            }
+                        }
+                        e.setCancelled(false);
+                        setItemInStorageRunnable.set(newItemStack, customSlotId); // swap items
+                    } else {
+                        if (e.isLeftClick()) {
+                            // An item is being removed from the UI, uncancel and remove it from the db
+                            setItemInStorageRunnable.set(ItemStack.empty(), customSlotId);
+                            e.setCancelled(false);
+                        } else if (e.isRightClick()) {
+                            // grab half of the item
+                            ItemStack newItemStack = clickedItemStack.clone();
+                            newItemStack.setAmount(newItemStack.getAmount()/2);
+                            setItemInStorageRunnable.set(newItemStack, customSlotId);
+                            e.setCancelled(false);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

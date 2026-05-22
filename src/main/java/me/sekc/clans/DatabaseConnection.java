@@ -20,10 +20,10 @@ public class DatabaseConnection {
             + ")";
 
     String clanStorageSchema = " ("
-            + "   id               INTEGER PRIMARY KEY,"
-            + "   storage_name     VARCHAR(32) NOT NULL DEFAULT 'Unnamed',"
-            + "   color     VARCHAR(32) NOT NULL DEFAULT 'WHITE',"
-            + "   data     TEXT"
+            + "   id            INTEGER PRIMARY KEY,"
+            + "   storage_name  VARCHAR(32) NOT NULL DEFAULT 'Unnamed',"
+            + "   color         VARCHAR(32) NOT NULL DEFAULT 'WHITE',"
+            + "   data          TEXT" // Base64 encoded NBT data
             + ")";
 
     Connection connection;
@@ -43,7 +43,8 @@ public class DatabaseConnection {
                 "CREATE TABLE IF NOT EXISTS clans ("
                         + "   name           VARCHAR(32) NOT NULL PRIMARY KEY,"
                         + "   owner_uuid     VARCHAR(36) NOT NULL,"
-                        + "   description    VARCHAR(512) NOT NULL DEFAULT ''"
+                        + "   description    VARCHAR(512) NOT NULL DEFAULT '',"
+                        + "   experience     INTEGER NOT NULL DEFAULT 0"
                         + ")"
         );
 
@@ -58,7 +59,7 @@ public class DatabaseConnection {
         connection.createStatement().executeUpdate(
                 "CREATE TABLE IF NOT EXISTS invites ("
                         + "   target_uuid    VARCHAR(36) NOT NULL," // foreign key to players table
-                        + "   inviter_uuid    VARCHAR(36) NOT NULL," // foreign key to players table
+                        + "   inviter_uuid   VARCHAR(36) NOT NULL," // foreign key to players table
                         + "   clan           VARCHAR(32)," // foreign key to clan table
                         + "   description    VARCHAR(256) NOT NULL DEFAULT ''"
                         + ")"
@@ -86,7 +87,7 @@ public class DatabaseConnection {
         }
     }
 
-    public class ClanPlayerData {
+    public static class ClanPlayerData {
         public OfflinePlayer offlinePlayer;
 
         ClanPlayerData(OfflinePlayer offlinePlayer) {
@@ -280,6 +281,33 @@ public class DatabaseConnection {
         }
     }
 
+    public int getClanExperience(String name) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT experience FROM clans WHERE name=?"
+            );
+            stmt.setString(1, name);
+            try (ResultSet results = stmt.executeQuery()) {
+                return results.getInt("experience");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setClanExperience(String name, int experience) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "UPDATE clans SET experience=? WHERE name=?"
+            );
+            stmt.setInt(1, experience);
+            stmt.setString(2, name);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static class StorageSlot {
         public String title;
         public DyeColor color;
@@ -369,7 +397,7 @@ public class DatabaseConnection {
         }
     }
 
-    // use itemStack=null to set air
+    // use ItemStack.empty() to set air
     public void setItemInClanStorage(String clan, ItemStack itemStack, int storageIndex, int slotID) {
         try {
             StorageSlot storage = getStorageFromClan(clan, storageIndex);
@@ -503,6 +531,10 @@ public class DatabaseConnection {
             throw new RuntimeException(e);
         }
     }
+
+    /*-----------------------------------
+     *  Invites
+     -----------------------------------*/
 
     public void sendClanInvite(String clanName, String description, UUID targetUUID, UUID inviterUUID) {
         try {

@@ -63,7 +63,7 @@ public class StorageContentsMenu extends BaseMenu {
     }
 
     private void setItemInStorage(String clanName, ItemStack itemStack, int customSlotID) {
-        clans.databaseConnection.setItemInClanStorage(clanName, itemStack, this.index, customSlotID);
+
     }
 
     @Override
@@ -74,61 +74,10 @@ public class StorageContentsMenu extends BaseMenu {
 
         String clanName = clans.databaseConnection.getPlayerClan(e.getWhoClicked().getUniqueId());
 
-        if (clickedLayoutItem.custom) {
-            int customSlotId = this.slotIdToCustomSlotID(e.getSlot());
-            ItemStack cursor = e.getCursor();
-
-            if (e.isShiftClick()) {
-                e.setCancelled(true); // don't allow any shift clicks
-            } else if (customSlotId != -1) {
-                if (clickedItemStack == null || clickedItemStack.isEmpty()) {
-                    if (!cursor.isEmpty()) {
-                        // An item has been dragged into the UI, add it and uncancel the event
-                        ItemStack newItemStack = cursor.clone();
-
-                        if (e.isRightClick()) {
-                            newItemStack.setAmount(1); // if right click then add 1
-                        }
-
-                        setItemInStorage(clanName, newItemStack, customSlotId);
-                        e.setCancelled(false);
-                    } else {
-                        // An empty slot has been clicked with nothing in cursor, do nothing
-                    }
-                } else {
-                    if (!cursor.isEmpty()) {
-                        // An item has been dragged onto another item on the UI, add it and uncancel the event
-                        ItemStack newItemStack = cursor.clone();
-
-                        if (newItemStack.isSimilar(clickedItemStack)) {
-                            if (e.isRightClick()) {
-                                int newAmount = Math.clamp(clickedItemStack.getAmount()+1, 1, newItemStack.getMaxStackSize());
-                                newItemStack.setAmount(newAmount); // if right click and is same item then add 1
-                                e.setCancelled(false);
-                            }
-                            if (e.isLeftClick()) {
-                                int newAmount = Math.clamp(clickedItemStack.getAmount()+newItemStack.getAmount(), 1, newItemStack.getMaxStackSize());
-                                newItemStack.setAmount(newAmount); // if left click and is same item then add all that we can
-                                e.setCancelled(false);
-                            }
-                        }
-                        e.setCancelled(false);
-                        setItemInStorage(clanName, newItemStack, customSlotId); // swap items
-                    } else {
-                        if (e.isLeftClick()) {
-                            // An item is being removed from the UI, uncancel and remove it from the db
-                            setItemInStorage(clanName, ItemStack.empty(), customSlotId);
-                            e.setCancelled(false);
-                        } else if (e.isRightClick()) {
-                            ItemStack newItemStack = clickedItemStack.clone();
-                            newItemStack.setAmount(newItemStack.getAmount()/2);
-                            setItemInStorage(clanName, newItemStack, customSlotId);
-                            e.setCancelled(false);
-                        }
-                    }
-                }
-            }
-        }
+        // handle putting and taking items from this inventory (only "_" chars in the gui yml) and keep in sync with the database
+        super.handleStorageClicked(clickedLayoutItem, e, (itemStack, customSlotID) -> {
+            clans.databaseConnection.setItemInClanStorage(clanName, itemStack, this.index, customSlotID);
+        });
 
         if (clickedLayoutItem.id != null) {
             if (clickedLayoutItem.id.equals("back")) {
