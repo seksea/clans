@@ -35,7 +35,7 @@ public class InfoCommand extends BaseCommand {
                     UUID playerUUID = ctx.getSource().getExecutor().getUniqueId();
 
                     if (!clans.databaseConnection.clanExists(clanName)) {
-                        clans.commandResponseInChat(ctx.getSource(), "info.not-exist",
+                        clans.commandResponseInChat(ctx.getSource(), "not-exist",
                                 Map.ofEntries(Map.entry("%clan_name%", clanName))
                         );
                         return Command.SINGLE_SUCCESS;

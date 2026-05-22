@@ -1,19 +1,34 @@
 cancelled: "Cancelled."
 todo: "Not implemented yet."
+not-exist: "Clan <b>%clan_name%</b> does not exist."
+level-up: "Congrats! Your clan just leveled up to <b>%new_level%</b>!"
+admin:
+  info-message: |
+    <green>===================================</green>
+    Admin info for clan <b>%clan_name%</b>:
+    <grey>-----------------------------------------</grey>
+    Description: <grey>%clan_description%</grey>
+    Owner: <b>%clan_owner_name%</b>
+    <hover:show_text:"<green>%clan_name% members:</green><br>%clan_members_list%"><yellow><u>[members (%clan_num_members%)]</u></yellow></hover>
+    <yellow><click:run_command:clan admin peekstorage %clan_name%><u>[view shared storage]</u></click></yellow>
+    <green>=========================================</green>
+  reloading: "Reloading configs."
+  reloaded: "Reloaded configs!"
+  get-experience: "Clan <b>%clan_name%</b> has <b>%val%</b> experience."
+  set-experience: "Set experience for <b>%clan_name%</b>: <b>%old_val%</b> -> <b>%new_val%</b>."
 delete:
   not-in-clan: "You need to be in a clan to delete a clan."
   not-owner-of-clan: "You cannot delete a clan if you are not the owner."
   deleted-clan: "Successfully deleted clan <b>%clan_name%</b>."
 info:
   info-message: |
-      <green>===================================</green>
-      Info for clan <b>%clan_name%</b>:
-      <grey>-----------------------------------------</grey>
-      Description: <grey>%clan_description%</grey>
-      Owner: <b>%clan_owner_name%</b>
-      <hover:show_text:"<green>%clan_name% members:</green><br>%clan_members_list%"><yellow><u>[members (%clan_num_members%)]</u></yellow></hover>
-      <green>=========================================</green>
-  not-exist: "Clan <b>%clan_name%</b> does not exist."
+    <green>===================================</green>
+    Info for clan <b>%clan_name%</b>:
+    <grey>-----------------------------------------</grey>
+    Description: <grey>%clan_description%</grey>
+    Owner: <b>%clan_owner_name%</b>
+    <hover:show_text:"<green>%clan_name% members:</green><br>%clan_members_list%"><yellow><u>[members (%clan_num_members%)]</u></yellow></hover>
+    <green>=========================================</green>
 invite:
   awaiting-input: "Type the username of the user you wish to invite in chat now (or \"cancel\"):"
   received: |
@@ -47,6 +62,7 @@ storage:
   recolored: "Successfully recolored the storage to <b>%new_color%</b>."
   couldnt-recolor: "Failed to recolor the storage, perhaps you misspelled the color?"
   wait-for-other-player: "Cannot access storage right now as another player in the clan is accessing it."
+  award-storage: "Your clan has leveled up so you have earned another shared storage slot! Check it out with <hover:show_text:\"Click me!\"><click:run_command:clan storage><b>/clan storage</b></click></hover>."
 main-menu:
   clan-info: |
     <white>Info for clan <b>%clan_name%</b>:</white>

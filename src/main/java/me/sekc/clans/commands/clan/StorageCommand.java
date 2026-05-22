@@ -15,7 +15,8 @@ public class StorageCommand extends BaseCommand {
     static public void register(Clans clans, LiteralArgumentBuilder<CommandSourceStack> root) {
         root.then(Commands.literal("storage")
             .executes(ctx -> {
-                MenuManager.open(ctx.getSource().getExecutor(), new StorageMenu(clans));
+				String clanName = clans.databaseConnection.getPlayerClan(ctx.getSource().getExecutor().getUniqueId());
+                MenuManager.open(ctx.getSource().getExecutor(), new StorageMenu(clans, clanName));
 
                 return Command.SINGLE_SUCCESS;
             }).requires(sender -> {

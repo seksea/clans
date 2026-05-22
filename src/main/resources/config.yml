@@ -16,3 +16,9 @@ database:
   # The path to the database (leave default if you want SQLite (no setup required) local database,
   # change this if you want to use a different SQL database)
   filepath: "jdbc:sqlite:plugins/clans/database.db"
+
+leveling:
+  # The level is calculated by the formula:
+  #   level = (experience/div)^pow
+  div: 100 # how much experience required for first level
+  pow: 0.7 # lower = harder to gain experience , should not be set higher than 1

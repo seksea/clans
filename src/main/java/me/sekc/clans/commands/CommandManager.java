@@ -13,6 +13,7 @@ public class CommandManager {
         Clans.log("Creating commands...");
 
         LiteralArgumentBuilder<CommandSourceStack> clanRoot = Commands.literal("clan");
+		AdminCommand.register(clans, clanRoot);
         DeleteCommand.register(clans, clanRoot);
         GUICommand.register(clans, clanRoot);
         InfoCommand.register(clans, clanRoot);

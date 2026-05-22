@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class BaseMenu {
-    static boolean replaceConfigs = true;
+    static boolean replaceConfigs = false; // turn this on for easy debug of default GUI configs
 
     public Clans clans;
     public YamlConfiguration menuConfiguration; // this is set by the MenuManager

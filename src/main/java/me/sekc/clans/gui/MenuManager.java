@@ -49,6 +49,10 @@ public class MenuManager {
         }
     }
 
+	static public void clearMenuConfigCache() {
+		menuConfigurationCache.clear();
+	}
+
     static public void closeInventory(Entity playerToCloseGUI) {
         if (playerToCloseGUI instanceof Player player) {
             player.closeInventory(); // Close any currently open gui

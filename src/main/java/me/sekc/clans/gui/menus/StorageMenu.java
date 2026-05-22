@@ -17,9 +17,11 @@ import java.util.List;
 import java.util.Set;
 
 public class StorageMenu extends BaseMenu {
-    public StorageMenu(Clans clans) {
-        super(clans);
-    }
+	String clanName; // we need to keep clan name here so we can view other clans storage as an admin
+	public StorageMenu(Clans clans, String clanName) {
+		super(clans);
+		this.clanName = clanName;
+	}
 
     static Set<String> storageContentsMenuOpenedForClan = new HashSet<>(); // Used so that only one player can access clan storage at once to prevent dupes
 
@@ -31,8 +33,6 @@ public class StorageMenu extends BaseMenu {
     @Override
     public void fillContent(Player player, Inventory gui) {
         super.fillContent(player, gui);
-
-        String clanName = clans.databaseConnection.getPlayerClan(player.getUniqueId());
 
         if (clanName == null) {
             throw new RuntimeException("Player tried to get storage when not in clan");
@@ -66,12 +66,10 @@ public class StorageMenu extends BaseMenu {
 
         if (clickedItem.id != null) {
             if (clickedItem.id.startsWith("slot ")) {
-                String clanName = clans.databaseConnection.getPlayerClan(e.getWhoClicked().getUniqueId());
-
                 if (storageContentsMenuOpenedForClan.contains(clanName)) { // just for now, until I can test the plugin for dupes with multiple players
                     clans.messageInChat(e.getWhoClicked(), "storage.wait-for-other-player", null);
                 } else {
-                    MenuManager.open(e.getWhoClicked(), new StorageContentsMenu(clans, Integer.valueOf(clickedItem.id.split(" ")[1])));
+                    MenuManager.open(e.getWhoClicked(), new StorageContentsMenu(clans, Integer.valueOf(clickedItem.id.split(" ")[1]), clanName));
                 }
             }
         }
@@ -79,8 +77,6 @@ public class StorageMenu extends BaseMenu {
 
     @Override
     public void handleClose(InventoryCloseEvent e) {
-        String clanName = clans.databaseConnection.getPlayerClan(e.getPlayer().getUniqueId());
-
         storageContentsMenuOpenedForClan.remove(clanName);
     }
 }

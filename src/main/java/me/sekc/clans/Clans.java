@@ -53,12 +53,7 @@ public final class Clans extends JavaPlugin {
                 "==================================================="
         );
 
-        // save yml to disk
-        boolean replaceConfigs = true; // turn this on for easy debug of default configs
-        saveResource("config.yml", /* replace */ replaceConfigs);
-        chatMessageFormat = getConfig().getString("clan-message-format");
-
-        loadMessagesYml(replaceConfigs);
+		reloadConfigFiles();
 
         try {
             databaseConnection = new DatabaseConnection(getConfig().getString("database.filepath"));
@@ -75,6 +70,16 @@ public final class Clans extends JavaPlugin {
     public void onDisable() {
         log("The clans plugin has been disabled.");
     }
+
+	public void reloadConfigFiles() {
+		boolean replaceConfigs = false; // turn this on for easy debug of default configs
+		// save yml to disk if dont exist
+		saveResource("config.yml", replaceConfigs);
+		reloadConfig();
+
+		chatMessageFormat = getConfig().getString("clan-message-format");
+		loadMessagesYml(replaceConfigs);
+	}
 
     public void loadMessagesYml(boolean replaceConfigs) {
         saveResource("messages.yml", /* replace */ replaceConfigs);

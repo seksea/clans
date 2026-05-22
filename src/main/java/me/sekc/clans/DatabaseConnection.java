@@ -3,6 +3,7 @@ package me.sekc.clans;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
@@ -281,6 +282,38 @@ public class DatabaseConnection {
         }
     }
 
+	public int calculateLevel(Clans clans, int experience) {
+		double div = clans.getConfig().getDouble("leveling.div");
+		double pow = clans.getConfig().getDouble("leveling.pow");
+		if (div != 0 && pow != 0) {
+			return (int)Math.floor(Math.pow((float)experience/div, pow));
+		}
+		throw new RuntimeException("invalid leveling.div or leveling.pow in config.yml");
+	}
+
+	public void handleLevelUp(Clans clans, String name, int newLevel) {
+		// Send message to all online members of the clan
+		for (ClanPlayerData playerData : getPlayersInClan(name)) {
+			Player player = playerData.offlinePlayer.getPlayer();
+			if (player == null)
+				continue;
+
+			clans.messageInChat(player, "level-up", Map.ofEntries(
+				Map.entry("%new_level%", String.valueOf(newLevel))
+			));
+		}
+	}
+
+
+	public void clanExperienceUpdated(Clans clans, String name, int oldValue, int newValue) { // called by setClanExperience
+		int oldLevel = calculateLevel(clans, oldValue);
+		int newLevel = calculateLevel(clans, newValue);
+
+		for (int curLevel = oldLevel + 1; curLevel <= newLevel; curLevel++) {
+			handleLevelUp(clans, name, curLevel);
+		}
+	}
+
     public int getClanExperience(String name) {
         try {
             PreparedStatement stmt = connection.prepareStatement(
@@ -295,14 +328,18 @@ public class DatabaseConnection {
         }
     }
 
-    public void setClanExperience(String name, int experience) {
+    public void setClanExperience(Clans clans, String name, int value) {
         try {
+			int oldValue = getClanExperience(name);
+
             PreparedStatement stmt = connection.prepareStatement(
                     "UPDATE clans SET experience=? WHERE name=?"
             );
-            stmt.setInt(1, experience);
+            stmt.setInt(1, value);
             stmt.setString(2, name);
             stmt.executeUpdate();
+
+			clanExperienceUpdated(clans, name, oldValue, value);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

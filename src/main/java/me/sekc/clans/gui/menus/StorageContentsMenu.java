@@ -19,10 +19,12 @@ import java.util.Set;
 
 public class StorageContentsMenu extends BaseMenu {
     int index = 0; // The index in the database
+	String clanName;
 
-    public StorageContentsMenu(Clans clans, int index) {
+    public StorageContentsMenu(Clans clans, int index, String clanName) {
         super(clans);
         this.index = index;
+		this.clanName = clanName;
     }
 
     @Override
@@ -33,8 +35,6 @@ public class StorageContentsMenu extends BaseMenu {
     @Override
     public void fillContent(Player player, Inventory gui) {
         super.fillContent(player, gui);
-
-        String clanName = clans.databaseConnection.getPlayerClan(player.getUniqueId());
 
         if (clanName == null) {
             throw new RuntimeException("Player tried to get storage contents when not in clan");
@@ -62,10 +62,6 @@ public class StorageContentsMenu extends BaseMenu {
         }
     }
 
-    private void setItemInStorage(String clanName, ItemStack itemStack, int customSlotID) {
-
-    }
-
     @Override
     protected void layoutItemClicked(LayoutItem clickedLayoutItem, InventoryClickEvent e) {
         super.layoutItemClicked(clickedLayoutItem, e);
@@ -81,7 +77,7 @@ public class StorageContentsMenu extends BaseMenu {
 
         if (clickedLayoutItem.id != null) {
             if (clickedLayoutItem.id.equals("back")) {
-                MenuManager.open(e.getWhoClicked(), new StorageMenu(clans));
+                MenuManager.open(e.getWhoClicked(), new StorageMenu(clans, clanName));
             } else if (clickedLayoutItem.id.equals("rename")) {
                 clans.messageInChat(e.getWhoClicked(), "storage.awaiting-name-input", null);
 
@@ -94,7 +90,7 @@ public class StorageContentsMenu extends BaseMenu {
                     }
                     clans.databaseConnection.editStorageName(clanName, this.index, message);
                     clans.messageInChat(e.getWhoClicked(), "storage.renamed", Map.ofEntries(Map.entry("%new_name%", message)));
-                    MenuManager.open(e.getWhoClicked(), new StorageContentsMenu(clans, this.index)); // re-open this menu
+                    MenuManager.open(e.getWhoClicked(), new StorageContentsMenu(clans, this.index, this.clanName)); // re-open this menu
                 });
             } else if (clickedLayoutItem.id.equals("color")) {
                 clans.messageInChat(e.getWhoClicked(), "storage.awaiting-color-input", null);
@@ -112,7 +108,7 @@ public class StorageContentsMenu extends BaseMenu {
                     } catch (Exception ex) {
                         clans.messageInChat(e.getWhoClicked(), "storage.couldnt-recolor", Map.ofEntries(Map.entry("%new_color%", message)));
                     }
-                    MenuManager.open(e.getWhoClicked(), new StorageContentsMenu(clans, this.index)); // re-open this menu
+                    MenuManager.open(e.getWhoClicked(), new StorageContentsMenu(clans, this.index, clanName)); // re-open this menu
                 });
             }
         }

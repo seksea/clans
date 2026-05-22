@@ -57,8 +57,10 @@ public class MainMenu extends BaseMenu {
         super.layoutItemClicked(clickedItem, e);
 
         if (clickedItem.id != null) {
+			String clanName = clans.databaseConnection.getPlayerClan(e.getWhoClicked().getUniqueId());
+
             if (clickedItem.id.equals("storage")) {
-                MenuManager.open(e.getWhoClicked(), new StorageMenu(clans));
+                MenuManager.open(e.getWhoClicked(), new StorageMenu(clans, clanName));
             }
             if (clickedItem.id.equals("leave")) {
                 MenuManager.open(e.getWhoClicked(), new LeaveMenu(clans));
