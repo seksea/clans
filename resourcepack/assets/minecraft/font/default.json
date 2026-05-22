@@ -27,6 +27,13 @@
       "ascent": 73,
       "height": 256,
       "chars": [""]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:clans_plugin/furnace_menu.png",
+      "ascent": 73,
+      "height": 256,
+      "chars": [""]
     }
   ]
 }

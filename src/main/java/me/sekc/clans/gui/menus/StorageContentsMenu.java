@@ -66,8 +66,6 @@ public class StorageContentsMenu extends BaseMenu {
     protected void layoutItemClicked(LayoutItem clickedLayoutItem, InventoryClickEvent e) {
         super.layoutItemClicked(clickedLayoutItem, e);
 
-        ItemStack clickedItemStack = e.getCurrentItem();
-
         String clanName = clans.databaseConnection.getPlayerClan(e.getWhoClicked().getUniqueId());
 
         // handle putting and taking items from this inventory (only "_" chars in the gui yml) and keep in sync with the database

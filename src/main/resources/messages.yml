@@ -21,6 +21,15 @@ delete:
   not-in-clan: "You need to be in a clan to delete a clan."
   not-owner-of-clan: "You cannot delete a clan if you are not the owner."
   deleted-clan: "Successfully deleted clan <b>%clan_name%</b>."
+furnace:
+  burnlore: |
+    <grey>Burn the items placed in the furnace</grey>
+    <grey>to level up your clan. Items currently</grey>
+    <grey>placed into the furnace are worth: <green>%furnace_worth%XP</green></grey>
+  itemofdaylore: |
+    <grey>This item changes every week.</grey>
+    <grey>it has a %multiplier%x multiplier.</grey>
+    <grey>%item_of_day% (%num_xp_normal%XP * %multiplier% = <green>%num_xp%XP/item</green>)</grey>
 info:
   info-message: |
     <green>===================================</green>

@@ -31,6 +31,7 @@ public class BaseMenu {
 
     public Clans clans;
     public YamlConfiguration menuConfiguration; // this is set by the MenuManager
+	int numCustomSlots = 0;
 
     protected class LayoutItem { // an item that has been parsed from a yaml file
         public Material material;
@@ -195,7 +196,7 @@ public class BaseMenu {
                 return item.custom ? numCustomSlotsBeforeSlotID : -1; // -1 if this slot is not custom
             }
 
-            if (item.custom)
+            if (item != null && item.custom)
                 numCustomSlotsBeforeSlotID++;
             curSlotID++;
         }

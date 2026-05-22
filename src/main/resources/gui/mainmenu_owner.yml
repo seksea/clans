@@ -48,4 +48,4 @@ items:
     id: "claninfo"
     material: PAPER
     name: "<bold>Info</bold>"
-    lore: "<grey>blah blah blah</grey>" # lore is set by MainMenu
+    lore: "<grey>blah blah blah</grey>" # lore is set by MainMenu (see messages.yml main-menu.clan-info to change msg)

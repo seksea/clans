@@ -1,0 +1,44 @@
+# The title contains these funky characters as the custom resource pack defines them as pngs,
+# change this to a normal title if you are not using a custom resource pack.
+#   = backspace (move text cursor backwards)
+#   = furnace menu png
+title: ""
+
+# The layout of the UI
+#  a-Z = custom items that you can customise below (cannot be taken)
+#  . = empty space that are completely locked, cannot have items dragged in
+#  _ = custom area, this is used for things such as the storagemenu, lets the menu decide how to handle this area
+layout: |
+  . D _ _ _ _ _ . .
+  . I _ _ _ _ _ . .
+  . . . . . . F . .
+  . . . . . . . . .
+  . . . . . . . . .
+  B . . . . . . . .
+
+# Define the items to fill the layout with, the only thing that matters here is the "id", as that controls what
+# the button does, so don't change that, everything else is cosmetic and can be customised.
+items:
+  D:
+    id: "itemofday"
+    material: BARRIER
+    name: "<bold>Item of the Day</bold>"
+    lore: "<grey>blah blah blah</grey>" # lore is set by FurnaceMenu (see messages.yml furnace.itemofdaylore to change msg)
+  I:
+    id: "itemlist"
+    material: BOOK
+    name: "<bold>Item list</bold>"
+    lore: |
+      <grey>View which items are allowed to be</grey>
+      <grey>burned in the furnace, and how</grey>
+      <grey>much XP they yield.</grey>
+  F:
+    id: "burn"
+    material: FLINT_AND_STEEL
+    name: "<bold><red>Burn</red></bold>"
+    lore: "<grey>blah blah blah</grey>" # lore is set by FurnaceMenu to show how much XP it would yield on burn (see messages.yml furnace.burnlore to change msg)
+  B:
+    id: "mainmenu"
+    material: BARRIER
+    name: "<bold>Back</bold>"
+    lore: "<grey>Go back to the main menu.</grey>"
