@@ -40,11 +40,15 @@ public class MainMenu extends BaseMenu {
 
                 int numPlayersInClan = clans.databaseConnection.getPlayersInClan(clanName).size();
 
+				int experience = clans.databaseConnection.getClanExperience(clanName);
+
                 lItem.lore = clans.getMessageWithPlaceholders(player.getUniqueId(), "main-menu.clan-info", Map.ofEntries(
-                        Map.entry("%clan_name%", clanName),
-                        Map.entry("%clan_description%", clans.databaseConnection.getClanDescription(clanName)),
-                        Map.entry("%clan_owner_name%", owner.getName()),
-                        Map.entry("%clan_num_members%", Integer.toString(numPlayersInClan))
+					Map.entry("%clan_name%", clanName),
+					Map.entry("%clan_description%", clans.databaseConnection.getClanDescription(clanName)),
+					Map.entry("%clan_experience%", Integer.toString(experience)),
+					Map.entry("%clan_level%", Integer.toString(clans.databaseConnection.calculateLevel(clans, experience))),
+					Map.entry("%clan_owner_name%", owner.getName()),
+					Map.entry("%clan_num_members%", Integer.toString(numPlayersInClan))
                 ));
                 gui.setItem(curIndex, lItem.getItemStack());
             }

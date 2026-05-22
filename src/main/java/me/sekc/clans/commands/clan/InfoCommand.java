@@ -49,14 +49,18 @@ public class InfoCommand extends BaseCommand {
                         clanMembersString += " - " + player.offlinePlayer.getName() + "<br>";
                     }
 
+					int experience = clans.databaseConnection.getClanExperience(clanName);
+
                     clans.commandResponseInChat(ctx.getSource(), "info.info-message",
-                            Map.ofEntries(
-                                    Map.entry("%clan_name%", clanName),
-                                    Map.entry("%clan_description%", clans.databaseConnection.getClanDescription(clanName)),
-                                    Map.entry("%clan_owner_name%", owner.getName()),
-                                    Map.entry("%clan_num_members%", Integer.toString(playersInClan.size())),
-                                    Map.entry("%clan_members_list%", clanMembersString)
-                            ));
+						Map.ofEntries(
+							Map.entry("%clan_name%", clanName),
+							Map.entry("%clan_description%", clans.databaseConnection.getClanDescription(clanName)),
+							Map.entry("%clan_experience%", Integer.toString(experience)),
+							Map.entry("%clan_level%", Integer.toString(clans.databaseConnection.calculateLevel(clans, experience))),
+							Map.entry("%clan_owner_name%", owner.getName()),
+							Map.entry("%clan_num_members%", Integer.toString(playersInClan.size())),
+							Map.entry("%clan_members_list%", clanMembersString)
+						));
                     return Command.SINGLE_SUCCESS;
                 })
             )

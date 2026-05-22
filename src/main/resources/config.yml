@@ -18,7 +18,13 @@ database:
   filepath: "jdbc:sqlite:plugins/clans/database.db"
 
 leveling:
-  # The level is calculated by the formula:
+  # How the level is calculated, it is calculated by the formula:
   #   level = (experience/div)^pow
   div: 100 # how much experience required for first level
-  pow: 0.7 # lower = harder to gain experience , should not be set higher than 1
+  pow: 0.7 # lower = difficulty gets harder faster, should not be set higher than 1
+
+storage-awards:
+  # How the level is calculated, it is calculated by the formula:
+  #   level = (experience/div)^pow
+  div: 10 # how many levels required for first award
+  pow: 0.6 # lower = num levels required increases more each time, should not be set higher than 1

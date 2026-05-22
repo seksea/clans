@@ -286,12 +286,25 @@ public class DatabaseConnection {
 		double div = clans.getConfig().getDouble("leveling.div");
 		double pow = clans.getConfig().getDouble("leveling.pow");
 		if (div != 0 && pow != 0) {
-			return (int)Math.floor(Math.pow((float)experience/div, pow));
+			return (int)Math.floor(Math.pow((double)experience/div, pow));
 		}
 		throw new RuntimeException("invalid leveling.div or leveling.pow in config.yml");
 	}
 
+	public int calculateNumStorageSlotsForClan(Clans clans, int level) {
+		double div = clans.getConfig().getDouble("storage-awards.div");
+		double pow = clans.getConfig().getDouble("storage-awards.pow");
+		if (div != 0 && pow != 0) {
+			return (int)Math.floor(Math.pow((double)level/div, pow));
+		}
+		throw new RuntimeException("invalid storage-awards.div or storage-awards.pow in config.yml");
+	}
+
+	// needs to be called for every level gained!! cannot jump levels, beware! see clanExperienceUpdated
 	public void handleLevelUp(Clans clans, String name, int newLevel) {
+		int oldNumStorage = calculateNumStorageSlotsForClan(clans, newLevel-1);
+		int newNumStorage = calculateNumStorageSlotsForClan(clans, newLevel);
+
 		// Send message to all online members of the clan
 		for (ClanPlayerData playerData : getPlayersInClan(name)) {
 			Player player = playerData.offlinePlayer.getPlayer();
@@ -302,8 +315,21 @@ public class DatabaseConnection {
 				Map.entry("%new_level%", String.valueOf(newLevel))
 			));
 		}
-	}
 
+		// Add new storage (this will basically always just add one)
+		for (int curNumStorage = oldNumStorage; newNumStorage > curNumStorage; curNumStorage++) {
+			addStorageToClan(name);
+
+			// Send message to all online members of the clan
+			for (ClanPlayerData playerData : getPlayersInClan(name)) {
+				Player player = playerData.offlinePlayer.getPlayer();
+				if (player == null)
+					continue;
+
+				clans.messageInChat(player, "storage.award-storage", null);
+			}
+		}
+	}
 
 	public void clanExperienceUpdated(Clans clans, String name, int oldValue, int newValue) { // called by setClanExperience
 		int oldLevel = calculateLevel(clans, oldValue);

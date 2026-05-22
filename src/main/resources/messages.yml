@@ -7,6 +7,7 @@ admin:
     <green>===================================</green>
     Admin info for clan <b>%clan_name%</b>:
     <grey>-----------------------------------------</grey>
+    Level: <hover:show_text:"<green>%clan_experience% XP</green>"><b>%clan_level%</b></hover>
     Description: <grey>%clan_description%</grey>
     Owner: <b>%clan_owner_name%</b>
     <hover:show_text:"<green>%clan_name% members:</green><br>%clan_members_list%"><yellow><u>[members (%clan_num_members%)]</u></yellow></hover>
@@ -25,6 +26,7 @@ info:
     <green>===================================</green>
     Info for clan <b>%clan_name%</b>:
     <grey>-----------------------------------------</grey>
+    Level: <hover:show_text:"<green>%clan_experience% XP</green>"><b>%clan_level%</b></hover>
     Description: <grey>%clan_description%</grey>
     Owner: <b>%clan_owner_name%</b>
     <hover:show_text:"<green>%clan_name% members:</green><br>%clan_members_list%"><yellow><u>[members (%clan_num_members%)]</u></yellow></hover>
@@ -67,6 +69,7 @@ main-menu:
   clan-info: |
     <white>Info for clan <b>%clan_name%</b>:</white>
     <grey>------------------------</grey>
+    <white>Level: <hover:show_text:"<green>%clan_experience% XP</green>"><b>%clan_level%</b></hover></white>
     <white>Description: <grey>%clan_description%</grey></white>
     <white>Owner: <b>%clan_owner_name%</b></white>
     <white>Members: %clan_num_members%</white>
