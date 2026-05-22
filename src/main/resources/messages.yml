@@ -1,3 +1,5 @@
+cancelled: "Cancelled."
+todo: "Not implemented yet."
 delete:
   not-in-clan: "You need to be in a clan to delete a clan."
   not-owner-of-clan: "You cannot delete a clan if you are not the owner."
@@ -13,7 +15,7 @@ info:
       <green>=========================================</green>
   not-exist: "Clan <b>%clan_name%</b> does not exist."
 invite:
-  awaiting-input: "Type the username of the user you wish to invite in chat now:"
+  awaiting-input: "Type the username of the user you wish to invite in chat now (or \"cancel\"):"
   received: |
     You have received an invite to <b>%clan_name%</b>, view it in <hover:show_text:\"Click me!\"><click:run_command:clan invites><b>/clan invites</b></click></hover>!
     Description: %description%
@@ -32,18 +34,19 @@ manage:
   update-var: "Updating <b>%var_name%</b> of clan <b>%clan_name%</b> to: <grey>%new_value%</grey>"
   get-var: "<b>%var_name%</b> of clan <b>%clan_name%</b> is: <grey>%value%</grey>"
 new:
-  awaiting-input: "Type the name of your new clan in chat:"
+  awaiting-input: "Type the name of your new clan in chat (or \"cancel\"):"
   clan-too-long: "Can't create clan as the name was too long."
   clan-already-exists: "Can't create clan as a clan with that name already exists."
   already-in-clan: "Can't create clan as you are already in another clan, use <hover:show_text:\"Click me!\"><click:run_command:clan leave><b>/clan leave</b></click></hover> first."
   created-new-clan: "Created new clan <b>%clan_name%</b>."
   invalid-name: "Clan name is not valid."
 storage:
-  awaiting-name-input: "Type the new name of your storage in chat:"
+  awaiting-name-input: "Type the new name of your storage in chat (or \"cancel\"):"
   renamed: "Successfully renamed the storage to <b>%new_name%</b>."
   awaiting-color-input: "Type the name of the new color for your storage in chat:"
   recolored: "Successfully recolored the storage to <b>%new_color%</b>."
   couldnt-recolor: "Failed to recolor the storage, perhaps you misspelled the color?"
+  wait-for-other-player: "Cannot access storage right now as another player in the clan is accessing it."
 main-menu:
   clan-info: |
     <white>Info for clan <b>%clan_name%</b>:</white>
@@ -51,4 +54,3 @@ main-menu:
     <white>Description: <grey>%clan_description%</grey></white>
     <white>Owner: <b>%clan_owner_name%</b></white>
     <white>Members: %clan_num_members%</white>
-todo: "Not implemented yet."

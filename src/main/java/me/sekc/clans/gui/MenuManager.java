@@ -81,7 +81,11 @@ public class MenuManager {
     }
 
     static public void onInventoryClose(InventoryCloseEvent e) {
-        playerToOpenGUIMap.remove(e.getPlayer().getUniqueId()); // no UI open anymore
+        BaseMenu openGUI = playerToOpenGUIMap.get(e.getPlayer().getUniqueId());
+        if (openGUI != null) {
+            openGUI.handleClose(e);
+            playerToOpenGUIMap.remove(e.getPlayer().getUniqueId()); // no UI open anymore
+        }
     }
 
     static public void onChat(AsyncChatEvent e) {

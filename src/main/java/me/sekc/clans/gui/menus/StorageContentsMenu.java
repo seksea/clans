@@ -139,6 +139,10 @@ public class StorageContentsMenu extends BaseMenu {
                 MenuManager.closeInventory(e.getWhoClicked());
 
                 MenuManager.performActionAfterTyping(e.getWhoClicked().getUniqueId(), message -> {
+                    if (message.equals("cancel")) {
+                        clans.messageInChat(e.getWhoClicked(), "cancelled", null);
+                        return;
+                    }
                     clans.databaseConnection.editStorageName(clanName, this.index, message);
                     clans.messageInChat(e.getWhoClicked(), "storage.renamed", Map.ofEntries(Map.entry("%new_name%", message)));
                     MenuManager.open(e.getWhoClicked(), new StorageContentsMenu(clans, this.index)); // re-open this menu
@@ -149,6 +153,10 @@ public class StorageContentsMenu extends BaseMenu {
                 MenuManager.closeInventory(e.getWhoClicked());
 
                 MenuManager.performActionAfterTyping(e.getWhoClicked().getUniqueId(), message -> {
+                    if (message.equals("cancel")) {
+                        clans.messageInChat(e.getWhoClicked(), "cancelled", null);
+                        return;
+                    }
                     try {
                         clans.databaseConnection.editStorageColor(clanName, this.index, DyeColor.valueOf(message.toUpperCase()));
                         clans.messageInChat(e.getWhoClicked(), "storage.recolored", Map.ofEntries(Map.entry("%new_color%", message)));

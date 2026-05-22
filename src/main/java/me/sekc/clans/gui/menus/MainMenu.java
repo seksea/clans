@@ -69,6 +69,10 @@ public class MainMenu extends BaseMenu {
                 MenuManager.closeInventory(e.getWhoClicked());
 
                 MenuManager.performActionAfterTyping(e.getWhoClicked().getUniqueId(), message -> {
+                    if (message.equals("cancel")) {
+                        clans.messageInChat(e.getWhoClicked(), "cancelled", null);
+                        return;
+                    }
                     try {
                         ((Player)e.getWhoClicked()).performCommand("clan invite " + message.replace(" ", "_")); // perform `/clan new` command
                     } catch (Exception err) {

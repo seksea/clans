@@ -9,8 +9,10 @@ import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Shulker;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,6 +20,8 @@ public class StorageMenu extends BaseMenu {
     public StorageMenu(Clans clans) {
         super(clans);
     }
+
+    static Set<String> storageContentsMenuOpenedForClan = new HashSet<>(); // Used so that only one player can access clan storage at once to prevent dupes
 
     @Override
     public String getConfigPath() {
@@ -62,8 +66,21 @@ public class StorageMenu extends BaseMenu {
 
         if (clickedItem.id != null) {
             if (clickedItem.id.startsWith("slot ")) {
-                MenuManager.open(e.getWhoClicked(), new StorageContentsMenu(clans, Integer.valueOf(clickedItem.id.split(" ")[1])));
+                String clanName = clans.databaseConnection.getPlayerClan(e.getWhoClicked().getUniqueId());
+
+                if (storageContentsMenuOpenedForClan.contains(clanName)) { // just for now, until I can test the plugin for dupes with multiple players
+                    clans.messageInChat(e.getWhoClicked(), "storage.wait-for-other-player", null);
+                } else {
+                    MenuManager.open(e.getWhoClicked(), new StorageContentsMenu(clans, Integer.valueOf(clickedItem.id.split(" ")[1])));
+                }
             }
         }
+    }
+
+    @Override
+    public void handleClose(InventoryCloseEvent e) {
+        String clanName = clans.databaseConnection.getPlayerClan(e.getPlayer().getUniqueId());
+
+        storageContentsMenuOpenedForClan.remove(clanName);
     }
 }

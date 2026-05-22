@@ -157,6 +157,10 @@ public class BaseMenu {
         }
     }
 
+    public void handleClose(InventoryCloseEvent e) {
+        // Override me!
+    }
+
     public void itemClicked(InventoryClickEvent e) {
         e.setCancelled(true); // always cancel by default when clicking in UI (can be uncancelled if required)
 
