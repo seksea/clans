@@ -30,7 +30,7 @@ public class BaseMenu {
     static boolean replaceConfigs = true;
 
     public Clans clans;
-    public YamlConfiguration menuConfiguration;
+    public YamlConfiguration menuConfiguration; // this is set by the MenuManager
 
     protected class LayoutItem { // an item that has been parsed from a yaml file
         public Material material;
@@ -84,18 +84,27 @@ public class BaseMenu {
 
     public BaseMenu(Clans clans) {
         this.clans = clans;
+    }
 
-        // Load the yml config
-        clans.saveResource(getConfigPath(), /* replace */ replaceConfigs);
+    // called by MenuManager, if YamlConfiguration is null then load it (either via `/clan admin reload`, or startup)
+    // returns the new yaml configuration
+    public YamlConfiguration initialiseAndUpdateYaml(YamlConfiguration configuration) {
+        if (configuration == null) {
+            // Load the yml config
+            clans.saveResource(getConfigPath(), /* replace */ replaceConfigs);
 
-        menuConfiguration = YamlConfiguration.loadConfiguration(new File(clans.getDataFolder(), getConfigPath()));
+            File file = new File(clans.getDataFolder(), getConfigPath());
+            configuration = YamlConfiguration.loadConfiguration(file);
 
-        final InputStream defConfigStream = clans.getResource(getConfigPath());
-        if (defConfigStream == null) {
-            return;
+            Clans.log("Loading yaml " + file.getPath());
+
+            final InputStream defConfigStream = clans.getResource(getConfigPath());
+
+            configuration.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8)));
         }
 
-        menuConfiguration.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8)));
+        this.menuConfiguration = configuration;
+        return configuration;
     }
 
     public String getConfigPath() { return ""; } // override me to have the yaml path
@@ -215,7 +224,6 @@ public class BaseMenu {
         // custom slot id is the count of all "_" before this, not raw slotID from inventory (so u can have borders and such)
         public void set(ItemStack itemStack, int customSlotID);
     }
-
     protected void handleStorageClicked(LayoutItem clickedLayoutItem, InventoryClickEvent e, SetItemInStorageRunnable setItemInStorageRunnable) {
         // Use this function in LayoutItemClicked to automatically treat all "_" chars as storage space
         //  - when an item is taken or added to the inventory then it calls the Runnable with the itemstack and slotid (id ignoring non-"_" chars)

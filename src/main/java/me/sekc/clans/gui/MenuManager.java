@@ -7,6 +7,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -22,8 +23,17 @@ import java.util.UUID;
 
 public class MenuManager {
     static Map<UUID, BaseMenu> playerToOpenGUIMap = new HashMap<>();
+    static Map<String, YamlConfiguration> menuConfigurationCache = new HashMap<>();
 
     static public void open(Entity entityToOpenGUI, BaseMenu menu) {
+        // load yaml if not in cache
+        menuConfigurationCache.putIfAbsent(
+                menu.getConfigPath(),
+                menu.initialiseAndUpdateYaml( // load if null
+                        menuConfigurationCache.getOrDefault(menu.getConfigPath(), null)
+                )
+        );
+
         if (entityToOpenGUI instanceof Player player) {
             closeInventory(player);
 
@@ -31,7 +41,7 @@ public class MenuManager {
 
             Inventory gui = Bukkit.getServer().createInventory(player, 9*6, Component.text(menu.getTitle()).color(TextColor.color(255, 255, 255)));
 
-            menu.fillContent(player, gui);
+            menu.fillContent(player, gui); // get the initial content of the menu
 
             player.openInventory(gui);
         } else {
