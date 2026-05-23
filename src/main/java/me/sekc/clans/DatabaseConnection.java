@@ -749,4 +749,28 @@ public class DatabaseConnection {
 		}
 	}
 
+
+	public List<FurnaceItem> getPageOfFurnaceItems(int offset, int limit) {
+		try {
+			PreparedStatement stmt = connection.prepareStatement(
+				"SELECT data, xp FROM furnace_items LIMIT ? OFFSET ?"
+			);
+			stmt.setInt(1, limit);
+			stmt.setInt(2, offset);
+
+			try (ResultSet results = stmt.executeQuery()) {
+				List<FurnaceItem> pageData = new ArrayList<>();
+
+				while (results.next()) {
+					FurnaceItem newItem = FurnaceItem.fromItemStackData(results.getString("data"), results.getInt("xp"));
+
+					pageData.add(newItem);
+				}
+				return pageData;
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }

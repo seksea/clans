@@ -32,6 +32,11 @@ furnace:
     <grey>it has a %multiplier%x multiplier.</grey>
     <grey>%item_of_day% (%num_xp_normal%XP * %multiplier% = <green>%num_xp%XP/item</green>)</grey>
   burned-items: "Items were burned for <bold><green>%num_clan_xp% Clan XP</green></bold> and <bold><green>%num_player_xp% Player XP</green></bold>."
+  item-list:
+    lore: |
+      <grey>Burn this item for:</grey>
+      <grey> - <green>%num_xp% Clan XP</green></grey>
+      <grey> - <green>%num_player_xp% Player XP</green></grey>
 info:
   info-message: |
     <green>===================================</green>

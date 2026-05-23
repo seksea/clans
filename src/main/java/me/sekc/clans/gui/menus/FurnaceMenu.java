@@ -143,7 +143,7 @@ public class FurnaceMenu extends BaseMenu {
 				));
 
             } else if (clickedLayoutItem.id.equals("itemlist")) {
-				clans.messageInChat(e.getWhoClicked(), "todo", null);
+				MenuManager.open(e.getWhoClicked(), new FurnaceItemListMenu(clans, 0));
             }
         }
     }

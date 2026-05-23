@@ -31,7 +31,7 @@ public class BaseMenu {
 
     public Clans clans;
     public YamlConfiguration menuConfiguration; // this is set by the MenuManager
-	int numCustomSlots = 0;
+	protected int numCustomSlots = 0;
 
     protected class LayoutItem { // an item that has been parsed from a yaml file
         public Material material;
@@ -115,12 +115,14 @@ public class BaseMenu {
         String layoutString = menuConfiguration.getString("layout").strip();
         List<String> layoutChars = new ArrayList<>(Arrays.asList(layoutString.split("\\n| ")));
 
+		numCustomSlots = 0;
         for (String layoutChar : layoutChars) {
             if (layoutChar.equals(".")) {
                 layoutArray.add(null); // Nothing in this spot
                 continue;
             }
             if (layoutChar.equals("_")) {
+				numCustomSlots++;
                 layoutArray.add(new LayoutItem(true)); // Custom item in this slot, override this func to customise these
                 continue;
             }

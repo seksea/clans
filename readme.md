@@ -30,3 +30,7 @@ Let players group up to form clans and fight for the top of the leaderboard.
 
 1. Drag the plugin .jar file to your servers' `plugins/` directory
 2. (Optional) If you would like to have the custom GUI background pngs, then you must merge the `resourcepack` folder into your servers resource pack)
+
+## Ideas
+
+ - Make the furnace take an item at an interval and be shared between clan members, so it's more like a real furnace slowly burning away
