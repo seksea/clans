@@ -249,8 +249,8 @@ public class BaseMenu {
                             newItemStack.setAmount(1); // if right click then add 1
                         }
 
+						e.setCancelled(false);
                         setItemInStorageRunnable.set(newItemStack, customSlotId);
-                        e.setCancelled(false);
                     } else {
                         // An empty slot has been clicked with nothing in cursor, do nothing
                     }
@@ -276,14 +276,14 @@ public class BaseMenu {
                     } else {
                         if (e.isLeftClick()) {
                             // An item is being removed from the UI, uncancel and remove it from the db
+							e.setCancelled(false);
                             setItemInStorageRunnable.set(ItemStack.empty(), customSlotId);
-                            e.setCancelled(false);
                         } else if (e.isRightClick()) {
                             // grab half of the item
                             ItemStack newItemStack = clickedItemStack.clone();
                             newItemStack.setAmount(newItemStack.getAmount()/2);
+							e.setCancelled(false);
                             setItemInStorageRunnable.set(newItemStack, customSlotId);
-                            e.setCancelled(false);
                         }
                     }
                 }

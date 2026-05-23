@@ -20,12 +20,12 @@ public class DatabaseConnection {
             + "   uuid     VARCHAR(36) NOT NULL PRIMARY KEY" // foreign key to players table
             + ")";
 
-    String clanStorageSchema = " ("
-            + "   id            INTEGER PRIMARY KEY,"
-            + "   storage_name  VARCHAR(32) NOT NULL DEFAULT 'Unnamed',"
-            + "   color         VARCHAR(32) NOT NULL DEFAULT 'WHITE',"
-            + "   data          TEXT" // Base64 encoded NBT data
-            + ")";
+	String clanStorageSchema = " ("
+		+ "   id            INTEGER PRIMARY KEY,"
+		+ "   storage_name  VARCHAR(32) NOT NULL DEFAULT 'Unnamed',"
+		+ "   color         VARCHAR(32) NOT NULL DEFAULT 'WHITE',"
+		+ "   data          TEXT" // Base64 encoded NBT data
+		+ ")";
 
     Connection connection;
 
@@ -57,14 +57,22 @@ public class DatabaseConnection {
                         + ")"
         );
 
-        connection.createStatement().executeUpdate(
-                "CREATE TABLE IF NOT EXISTS invites ("
-                        + "   target_uuid    VARCHAR(36) NOT NULL," // foreign key to players table
-                        + "   inviter_uuid   VARCHAR(36) NOT NULL," // foreign key to players table
-                        + "   clan           VARCHAR(32)," // foreign key to clan table
-                        + "   description    VARCHAR(256) NOT NULL DEFAULT ''"
-                        + ")"
-        );
+		connection.createStatement().executeUpdate(
+			"CREATE TABLE IF NOT EXISTS invites ("
+				+ "   target_uuid    VARCHAR(36) NOT NULL," // foreign key to players table
+				+ "   inviter_uuid   VARCHAR(36) NOT NULL," // foreign key to players table
+				+ "   clan           VARCHAR(32)," // foreign key to clan table
+				+ "   description    VARCHAR(256) NOT NULL DEFAULT ''"
+				+ ")"
+		);
+
+		connection.createStatement().executeUpdate(
+			"CREATE TABLE IF NOT EXISTS furnace_items ("
+				+ "   material		VARCHAR(128) NOT NULL," // material for fast searching in database
+				+ "   data          TEXT NOT NULL PRIMARY KEY," // Base64 encoded NBT data
+				+ "   xp          	INTEGER NOT NULL DEFAULT 1"
+				+ ")"
+		);
     }
 
     /*-----------------------------------
@@ -662,4 +670,66 @@ public class DatabaseConnection {
             throw new RuntimeException(e);
         }
     }
+
+    /*-----------------------------------
+     *  Furnace
+     -----------------------------------*/
+
+	public static class FurnaceItem {
+		public ItemStack item;
+		public int xp;
+		FurnaceItem(ItemStack item, int xp) {
+			this.item = item;
+			this.xp = xp;
+		}
+
+		String getItemStackData() {
+			byte[] bytes = ItemStack.serializeItemsAsBytes(Collections.singleton(item));
+			return Base64Coder.encodeLines(bytes);
+		}
+
+		static FurnaceItem fromItemStackData(String itemStackData, int xp) {
+			byte[] bytes = Base64Coder.decodeLines(itemStackData);
+			return new FurnaceItem(ItemStack.deserializeItemsFromBytes(bytes)[0], xp);
+		}
+	}
+
+	public void addItemToFurnaceItemList(ItemStack itemStack, int xp) {
+		try {
+			PreparedStatement stmt = connection.prepareStatement(
+				"INSERT INTO furnace_items (material, data, xp) VALUES (?, ?, ?)"
+			);
+			FurnaceItem furnaceItem = new FurnaceItem(itemStack, xp);
+			stmt.setString(1, itemStack.getType().toString());
+			stmt.setString(2, furnaceItem.getItemStackData());
+			stmt.setInt(3, xp);
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	// returns null if no similar item in list
+	public FurnaceItem getSimilarItemFromFurnaceItemList(ItemStack itemStack) {
+		try {
+			PreparedStatement stmt = connection.prepareStatement(
+				"SELECT data, xp FROM furnace_items WHERE material=?"
+			);
+			stmt.setString(1, itemStack.getType().toString());
+
+			try (ResultSet results = stmt.executeQuery()) {
+				while (results.next()) {
+					FurnaceItem newItem = FurnaceItem.fromItemStackData(results.getString("data"), results.getInt("xp"));
+
+					if (itemStack.isSimilar(newItem.item)) {
+						return newItem;
+					}
+				}
+				return null;
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }

@@ -17,6 +17,7 @@ admin:
   reloaded: "Reloaded configs!"
   get-experience: "Clan <b>%clan_name%</b> has <b>%val%</b> experience."
   set-experience: "Set experience for <b>%clan_name%</b>: <b>%old_val%</b> -> <b>%new_val%</b>."
+  added-item-to-furnace-list: "Added item \"%item_name%\" to the furnace database for <green><b>%num_xp%XP</b></green>"
 delete:
   not-in-clan: "You need to be in a clan to delete a clan."
   not-owner-of-clan: "You cannot delete a clan if you are not the owner."
@@ -30,6 +31,7 @@ furnace:
     <grey>This item changes every week.</grey>
     <grey>it has a %multiplier%x multiplier.</grey>
     <grey>%item_of_day% (%num_xp_normal%XP * %multiplier% = <green>%num_xp%XP/item</green>)</grey>
+  burned-items: "Items were burned for <bold><green>%num_clan_xp% Clan XP</green></bold> and <bold><green>%num_player_xp% Player XP</green></bold>."
 info:
   info-message: |
     <green>===================================</green>

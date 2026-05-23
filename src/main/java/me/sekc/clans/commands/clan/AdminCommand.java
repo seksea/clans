@@ -14,6 +14,8 @@ import me.sekc.clans.gui.MenuManager;
 import me.sekc.clans.gui.menus.StorageMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 import java.util.Map;
@@ -101,6 +103,28 @@ public class AdminCommand extends BaseCommand {
 			.requires(sender -> sender.getSender().hasPermission("clans.admin"))
 		);
 
+		root.then(Commands.literal("admin")
+			.then(Commands.literal("add_item_in_hand_to_furnace_list")
+				.then(Commands.argument("num_xp", IntegerArgumentType.integer(1))
+					.executes(ctx -> {
+						int numXp = ctx.getArgument("num_xp", Integer.class);
+
+						ItemStack stack = ((Player)ctx.getSource().getExecutor()).getInventory().getItemInMainHand().clone();
+						stack.setAmount(1); // dont have multiple
+
+						clans.databaseConnection.addItemToFurnaceItemList(stack, numXp);
+
+						clans.messageInChat(ctx.getSource().getExecutor(), "admin.added-item-to-furnace-list", Map.ofEntries(
+							Map.entry("%item_name%", stack.getType().toString()),
+							Map.entry("%num_xp%", Integer.toString(numXp))
+						));
+
+						return Command.SINGLE_SUCCESS;
+					})
+				)
+			)
+			.requires(sender -> sender.getSender().hasPermission("clans.admin"))
+		);
 
 		root.then(Commands.literal("admin")
 			.then(Commands.literal("clan_experience") // manage admin data about a clan
