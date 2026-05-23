@@ -64,6 +64,11 @@ public class InvitesMenu extends BaseMenu {
                 String clanName = clickedItem.id.split(" ")[1];
                 UUID playerUUID = e.getWhoClicked().getUniqueId();
 
+				if (clans.databaseConnection.getPlayersInClan(clanName).size() >= clans.getConfig().getInt("clans.player-limit")) {
+					clans.messageInChat(e.getWhoClicked(), "invite.at-max-players", null);
+					return;
+				}
+
                 // delete all active invites to this clan (so if kicked then can't come back)
                 clans.databaseConnection.deleteInvitesFromClan(playerUUID, clanName);
                 clans.databaseConnection.addPlayerToClan(clanName, playerUUID);

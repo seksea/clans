@@ -54,6 +54,7 @@ invite:
   sent: "Successfully sent invite to <hover:show_text:\"Targets UUID: %target_uuid%\"><b>%target_name%</b></hover>!"
   accepted: "You have accepted the invite and joined the clan <b>%clan_name%</b>"
   failed: "Failed to send invite, probably because you lack permission."
+  at-max-players: "Failed to accept invite as clan is already at max capacity."
 leaderboard:
   clan-lore: |
     <white>Level: %clan_level%</white>

@@ -29,3 +29,6 @@ storage-awards:
   #   level = (experience/div)^pow
   div: 10 # how many levels required for first award
   pow: 0.6 # lower = num levels required increases more each time, should not be set higher than 1
+
+clans:
+  player-limit: 16 # Maximum 16 players in a clan
