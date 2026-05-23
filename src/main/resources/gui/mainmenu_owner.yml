@@ -13,7 +13,7 @@ layout: |
   . . . . . . . . .
   . . . . . . . . .
   . . . . . . . . .
-  . F S I T . M L .
+  . F S I T W M L .
   . . . . C . . . .
 
 # Define the items to fill the layout with, the only thing that matters here is the "id", as that controls what
@@ -39,6 +39,11 @@ items:
     material: ITEM_FRAME
     name: "<bold>Leaderboard</bold>"
     lore: "<grey>View the top clans on the server.</grey>"
+  W:
+    id: "warps"
+    material: COMPASS
+    name: "<bold>Warps</bold>"
+    lore: "<grey>Teleport to one of the clan warps.</grey>"
   M:
     id: "manage"
     material: WRITABLE_BOOK

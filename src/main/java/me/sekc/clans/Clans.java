@@ -32,13 +32,13 @@ public final class Clans extends JavaPlugin {
     public YamlConfiguration messagesYml;
 
     String chatMessageFormat;
+	boolean placeholderAPIInstalled = true;
 
     @Override
     public void onEnable() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
-            err("Could not find PlaceholderAPI! This plugin is required, disabling this plugin.");
-            Bukkit.getPluginManager().disablePlugin(this);
-            return;
+            warn("Could not find PlaceholderAPI, it will not be used.");
+			placeholderAPIInstalled = false;
         }
 
         log("\n" +
@@ -113,6 +113,9 @@ public final class Clans extends JavaPlugin {
         }
 
 
+		if (!placeholderAPIInstalled) {
+			return original.stripTrailing(); // dont use PlaceholderAPI if not installed
+		}
         return PlaceholderAPI.setPlaceholders(offlinePlayer, original.stripTrailing()); // strip trailing as multiline yaml strings always end with unnecessary newline
     }
 

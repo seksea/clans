@@ -33,4 +33,4 @@ items:
     id: "members"
     material: PLAYER_HEAD
     name: "<bold><white>Members</white></bold>"
-    lore: "Manage members in the clan."
+    lore: "<grey>Manage members in the clan.</grey>"
