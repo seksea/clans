@@ -13,7 +13,7 @@ layout: |
   . . . . . . . . .
   . . . . . . . . .
   . . . . . . . . .
-  . F S I . . M L .
+  . F S I T . M L .
   . . . . C . . . .
 
 # Define the items to fill the layout with, the only thing that matters here is the "id", as that controls what
@@ -34,6 +34,11 @@ items:
     material: ARROW
     name: "<bold>Invite</bold>"
     lore: "<grey>Invite a new player to the clan.</grey>"
+  T:
+    id: "leaderboard"
+    material: ITEM_FRAME
+    name: "<bold>Leaderboard</bold>"
+    lore: "<grey>View the top clans on the server.</grey>"
   M:
     id: "manage"
     material: WRITABLE_BOOK

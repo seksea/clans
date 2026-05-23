@@ -79,22 +79,39 @@ public class DatabaseConnection {
      *  Clans
      -----------------------------------*/
 
-    public List<String> getAllClanNames() {
-        try {
-            PreparedStatement stmt = connection.prepareStatement(
-                    "SELECT name FROM clans"
-            );
-            try (ResultSet results = stmt.executeQuery()) {
-                List<String> clanNameList = new ArrayList<>();
-                while (results.next()) {
-                    clanNameList.add(results.getString("name"));
-                }
-                return clanNameList;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	public List<String> getAllClanNames() {
+		try {
+			PreparedStatement stmt = connection.prepareStatement(
+				"SELECT name FROM clans"
+			);
+			try (ResultSet results = stmt.executeQuery()) {
+				List<String> clanNameList = new ArrayList<>();
+				while (results.next()) {
+					clanNameList.add(results.getString("name"));
+				}
+				return clanNameList;
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<String> getClanLeaderboardNames() {
+		try {
+			PreparedStatement stmt = connection.prepareStatement(
+				"SELECT name FROM clans ORDER BY experience DESC"
+			);
+			try (ResultSet results = stmt.executeQuery()) {
+				List<String> clanNameList = new ArrayList<>();
+				while (results.next()) {
+					clanNameList.add(results.getString("name"));
+				}
+				return clanNameList;
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
     public static class ClanPlayerData {
         public OfflinePlayer offlinePlayer;

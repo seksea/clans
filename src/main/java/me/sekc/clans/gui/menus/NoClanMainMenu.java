@@ -35,6 +35,8 @@ public class NoClanMainMenu extends BaseMenu {
                         clans.messageInChat(e.getWhoClicked(), "new.invalid-name", null);
                     }
                 });
+			} else if (clickedItem.id.equals("leaderboard")) {
+				MenuManager.open(e.getWhoClicked(), new LeaderboardMenu(clans));
             } else if (clickedItem.id.equals("invites")) {
                 MenuManager.open(e.getWhoClicked(), new InvitesMenu(clans));
             }

@@ -20,6 +20,7 @@ public class CommandManager {
         InfoCommand.register(clans, clanRoot);
         InviteCommand.register(clans, clanRoot);
         InvitesCommand.register(clans, clanRoot);
+		LeaderboardCommand.register(clans, clanRoot);
         LeaveCommand.register(clans, clanRoot);
         ManageCommand.register(clans, clanRoot);
         NewCommand.register(clans, clanRoot);

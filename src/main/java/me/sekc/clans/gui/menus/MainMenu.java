@@ -68,6 +68,8 @@ public class MainMenu extends BaseMenu {
 				MenuManager.open(e.getWhoClicked(), new FurnaceMenu(clans, clanName));
 			} else if (clickedItem.id.equals("storage")) {
 				MenuManager.open(e.getWhoClicked(), new StorageMenu(clans, clanName));
+			} else if (clickedItem.id.equals("leaderboard")) {
+				MenuManager.open(e.getWhoClicked(), new LeaderboardMenu(clans));
 			} else if (clickedItem.id.equals("leave")) {
                 MenuManager.open(e.getWhoClicked(), new LeaveMenu(clans));
             } else if (clickedItem.id.equals("invite")) {

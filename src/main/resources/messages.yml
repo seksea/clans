@@ -54,6 +54,12 @@ invite:
   sent: "Successfully sent invite to <hover:show_text:\"Targets UUID: %target_uuid%\"><b>%target_name%</b></hover>!"
   accepted: "You have accepted the invite and joined the clan <b>%clan_name%</b>"
   failed: "Failed to send invite, probably because you lack permission."
+leaderboard:
+  clan-lore: |
+    <white>Level: %clan_level%</white>
+    <white>Description: %clan_description%</white>
+    <white>Owner: %clan_owner_name%</white>
+    <white>Members: %clan_num_members%</white>
 leave:
   not-in-clan: "You need to be in a clan to leave a clan."
   owner-of-clan: "You cannot leave a clan if you are the owner, please delete the clan with <hover:show_text:\"Click me!\"><click:run_command:clan delete><b>/clan delete</b></click></hover>."
@@ -85,7 +91,7 @@ main-menu:
   clan-info: |
     <white>Info for clan <b>%clan_name%</b>:</white>
     <grey>------------------------</grey>
-    <white>Level: <hover:show_text:"<green>%clan_experience% XP</green>"><b>%clan_level%</b></hover></white>
+    <white>Level: <b>%clan_level%</b></white>
     <white>Description: <grey>%clan_description%</grey></white>
     <white>Owner: <b>%clan_owner_name%</b></white>
     <white>Members: %clan_num_members%</white>
