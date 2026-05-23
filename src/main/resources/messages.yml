@@ -59,6 +59,7 @@ leave:
   owner-of-clan: "You cannot leave a clan if you are the owner, please delete the clan with <hover:show_text:\"Click me!\"><click:run_command:clan delete><b>/clan delete</b></click></hover>."
   left-clan: "You have left the clan <b>%clan_name%</b>"
 manage:
+  awaiting-description-input: "Type the new description of your clan in chat (or \"cancel\"):"
   update-var: "Updating <b>%var_name%</b> of clan <b>%clan_name%</b> to: <grey>%new_value%</grey>"
   get-var: "<b>%var_name%</b> of clan <b>%clan_name%</b> is: <grey>%value%</grey>"
 new:

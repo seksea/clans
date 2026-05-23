@@ -20,12 +20,13 @@ public class OwnerMainMenu extends MainMenu {
         super.layoutItemClicked(clickedItem, e); // Handle the normal MainMenu buttons
 
         if (clickedItem.id != null) {
+			String clanName = clans.databaseConnection.getPlayerClan(e.getWhoClicked().getUniqueId());
+
             if (clickedItem.id.equals("delete")) {
                 MenuManager.open(e.getWhoClicked(), new DeleteMenu(clans));
-            }
-            if (clickedItem.id.equals("manage")) {
-                clans.messageInChat(e.getWhoClicked(), "todo", null);
-            }
+            } else if (clickedItem.id.equals("manage")) {
+				MenuManager.open(e.getWhoClicked(), new ManageClanMenu(clans, clanName));
+			}
         }
     }
 }

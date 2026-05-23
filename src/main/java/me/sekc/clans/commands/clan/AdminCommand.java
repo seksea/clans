@@ -11,6 +11,7 @@ import me.sekc.clans.DatabaseConnection;
 import me.sekc.clans.commands.BaseCommand;
 import me.sekc.clans.commands.clan.suggestions.ClanSuggestionProvider;
 import me.sekc.clans.gui.MenuManager;
+import me.sekc.clans.gui.menus.ManageClanMenu;
 import me.sekc.clans.gui.menus.StorageMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -79,6 +80,29 @@ public class AdminCommand extends BaseCommand {
 						}
 
 						MenuManager.open(ctx.getSource().getExecutor(), new StorageMenu(clans, clanName)); // open storage for clan
+						return Command.SINGLE_SUCCESS;
+					})
+				)
+			)
+			.requires(sender -> sender.getSender().hasPermission("clans.admin"))
+		);
+
+
+		root.then(Commands.literal("admin")
+			.then(Commands.literal("peekmanage")
+				.then(Commands.argument("name", StringArgumentType.word())
+					.suggests(new ClanSuggestionProvider(clans))
+					.executes(ctx -> {
+						String clanName = ctx.getArgument("name", String.class);
+
+						if (!clans.databaseConnection.clanExists(clanName)) {
+							clans.commandResponseInChat(ctx.getSource(), "not-exist",
+								Map.ofEntries(Map.entry("%clan_name%", clanName))
+							);
+							return Command.SINGLE_SUCCESS;
+						}
+
+						MenuManager.open(ctx.getSource().getExecutor(), new ManageClanMenu(clans, clanName)); // open storage for clan
 						return Command.SINGLE_SUCCESS;
 					})
 				)

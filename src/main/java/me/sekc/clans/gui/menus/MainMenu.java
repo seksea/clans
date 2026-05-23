@@ -5,6 +5,7 @@ import me.sekc.clans.DatabaseConnection;
 import me.sekc.clans.gui.BaseMenu;
 import me.sekc.clans.gui.MenuManager;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -65,14 +66,11 @@ public class MainMenu extends BaseMenu {
 
 			if (clickedItem.id.equals("furnace")) {
 				MenuManager.open(e.getWhoClicked(), new FurnaceMenu(clans, clanName));
-			}
-			if (clickedItem.id.equals("storage")) {
+			} else if (clickedItem.id.equals("storage")) {
 				MenuManager.open(e.getWhoClicked(), new StorageMenu(clans, clanName));
-			}
-            if (clickedItem.id.equals("leave")) {
+			} else if (clickedItem.id.equals("leave")) {
                 MenuManager.open(e.getWhoClicked(), new LeaveMenu(clans));
-            }
-            if (clickedItem.id.equals("invite")) {
+            } else if (clickedItem.id.equals("invite")) {
                 clans.messageInChat(e.getWhoClicked(), "invite.awaiting-input", null);
 
                 MenuManager.closeInventory(e.getWhoClicked());
