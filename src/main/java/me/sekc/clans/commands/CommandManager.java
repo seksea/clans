@@ -15,6 +15,7 @@ public class CommandManager {
         LiteralArgumentBuilder<CommandSourceStack> clanRoot = Commands.literal("clan");
 		AdminCommand.register(clans, clanRoot);
         DeleteCommand.register(clans, clanRoot);
+		FurnaceCommand.register(clans, clanRoot);
         GUICommand.register(clans, clanRoot);
         InfoCommand.register(clans, clanRoot);
         InviteCommand.register(clans, clanRoot);
