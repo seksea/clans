@@ -62,6 +62,10 @@ manage:
   awaiting-description-input: "Type the new description of your clan in chat (or \"cancel\"):"
   update-var: "Updating <b>%var_name%</b> of clan <b>%clan_name%</b> to: <grey>%new_value%</grey>"
   get-var: "<b>%var_name%</b> of clan <b>%clan_name%</b> is: <grey>%value%</grey>"
+  players:
+    player-lore: "<grey>%player_uuid%</grey>"
+    kicked: "Kicked <b>%player_name%</b> from your clan."
+    cant-kick-owner: "Can't kick <b>%player_name%</b> as they are the owner of the clan."
 new:
   awaiting-input: "Type the name of your new clan in chat (or \"cancel\"):"
   clan-too-long: "Can't create clan as the name was too long."

@@ -22,7 +22,7 @@ items:
   D:
     id: "itemofday"
     material: BARRIER
-    name: "<bold>Item of the Day</bold>"
+    name: "<bold>Item of the Week</bold>"
     lore: "<grey>blah blah blah</grey>" # lore is set by FurnaceMenu (see messages.yml furnace.itemofdaylore to change msg)
   I:
     id: "itemlist"

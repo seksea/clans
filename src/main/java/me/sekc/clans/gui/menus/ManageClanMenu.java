@@ -30,7 +30,7 @@ public class ManageClanMenu extends BaseMenu {
         super.fillContent(player, gui);
 
         if (clanName == null) {
-            throw new RuntimeException("Player tried to get storage contents when not in clan");
+            throw new RuntimeException("Player tried to get manage menu when not in clan");
         }
 
         int curIndex = 0;
@@ -74,8 +74,8 @@ public class ManageClanMenu extends BaseMenu {
 
                     MenuManager.open(e.getWhoClicked(), new ManageClanMenu(clans, this.clanName)); // re-open this menu
                 });
-            } else if (clickedLayoutItem.id.equals("players")) {
-				clans.messageInChat(e.getWhoClicked(), "todo", null);
+            } else if (clickedLayoutItem.id.equals("members")) {
+				MenuManager.open(e.getWhoClicked(), new ManageMembersMenu(clans, this.clanName));
 			}
         }
     }
