@@ -33,13 +33,13 @@ public class GUICommand extends BaseCommand {
             openMainMenu(clans, ctx.getSource().getExecutor());
 
             return Command.SINGLE_SUCCESS;
-        });
-        root.then(Commands.literal("gui")
-                .executes(ctx -> {
-                    openMainMenu(clans, ctx.getSource().getExecutor());
+        }).requires(sender -> sender.getSender().hasPermission("clans.gui"));
 
-                    return Command.SINGLE_SUCCESS;
-                })
-                .requires(sender -> sender.getSender().hasPermission("clans.gui")));
+		root.then(Commands.literal("gui")
+			.executes(ctx -> {
+				openMainMenu(clans, ctx.getSource().getExecutor());
+
+				return Command.SINGLE_SUCCESS;
+			}).requires(sender -> sender.getSender().hasPermission("clans.gui")));
     }
 }
