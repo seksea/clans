@@ -1,6 +1,7 @@
 <img src="docs/logo.png" alt="Alt text" width="100%" style="image-rendering: pixelated;">
 
-# The ultimate clan plugin
+# The ultimate clans plugin
+[\[preview video\]](https://www.youtube.com/watch?v=V3XsH0YFaS8)
 
 ---
 
