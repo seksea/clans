@@ -3,6 +3,8 @@
 # The ultimate clans plugin
 [\[preview video\]](https://www.youtube.com/watch?v=V3XsH0YFaS8)
 
+[spigot page (download jar here)](https://www.spigotmc.org/resources/clans.135746/)
+
 ---
 
 Let players group up to form clans and fight for the top of the leaderboard.
