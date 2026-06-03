@@ -5,6 +5,8 @@
 
 [spigot page (download jar here)](https://www.spigotmc.org/resources/clans.135746/)
 
+[support discord](https://discord.gg/QySnx7Vpuh)
+
 ---
 
 Let players group up to form clans and fight for the top of the leaderboard.
