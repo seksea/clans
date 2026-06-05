@@ -24,6 +24,9 @@ leveling:
   pow: 0.7 # lower = difficulty gets harder faster, should not be set higher than 1
   player-xp-mul: 0.7 # Any time you get xp for your clan, this the xp with this multiplier will be added to your player XP
 
+furnace:
+  delayTicks: 80 # How many ticks should it take to burn 1 item?
+
 storage-awards:
   # How the level is calculated, it is calculated by the formula:
   #   level = (experience/div)^pow

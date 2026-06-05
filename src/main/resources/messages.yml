@@ -11,7 +11,8 @@ admin:
     Description: <grey>%clan_description%</grey>
     Owner: <b>%clan_owner_name%</b>
     <hover:show_text:"<green>%clan_name% members:</green><br>%clan_members_list%"><yellow><u>[members (%clan_num_members%)]</u></yellow></hover>
-    <yellow><click:run_command:clan admin peekstorage %clan_name%><u>[view shared storage]</u></click></yellow>
+    <yellow><click:run_command:clan admin peekstorage %clan_name%><u>[view shared storage (ADMIN)]</u></click></yellow>
+    <yellow><click:run_command:clan admin peekmanage %clan_name%><u>[manage this clan (ADMIN)]</u></click></yellow>
     <green>=========================================</green>
   reloading: "Reloading configs."
   reloaded: "Reloaded configs!"
@@ -23,14 +24,11 @@ delete:
   not-owner-of-clan: "You cannot delete a clan if you are not the owner."
   deleted-clan: "Successfully deleted clan <b>%clan_name%</b>."
 furnace:
-  burnlore: |
-    <grey>Burn the items placed in the furnace</grey>
-    <grey>to level up your clan. Items currently</grey>
-    <grey>placed into the furnace are worth: <green>%furnace_worth%XP</green></grey>
   itemofdaylore: |
     <grey>This item changes every week.</grey>
     <grey>it has a %multiplier%x multiplier.</grey>
     <grey>%item_of_day% (%num_xp_normal%XP * %multiplier% = <green>%num_xp%XP/item</green>)</grey>
+  wait-for-other-player: "Cannot access the furnace right now as another player in the clan is accessing it."
   burned-items: "Items were burned for <bold><green>%num_clan_xp% Clan XP</green></bold> and <bold><green>%num_player_xp% Player XP</green></bold>."
   item-list:
     lore: |

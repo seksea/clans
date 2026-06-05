@@ -45,7 +45,8 @@ public class DatabaseConnection {
                         + "   name           VARCHAR(32) NOT NULL PRIMARY KEY,"
                         + "   owner_uuid     VARCHAR(36) NOT NULL,"
                         + "   description    VARCHAR(512) NOT NULL DEFAULT '',"
-                        + "   experience     INTEGER NOT NULL DEFAULT 0"
+						+ "   experience     INTEGER NOT NULL DEFAULT 0,"
+						+ "   furnace_data   TEXT" // items in the furnace rn, null if empty
                         + ")"
         );
 
@@ -360,6 +361,14 @@ public class DatabaseConnection {
 		int oldLevel = calculateLevel(clans, oldValue);
 		int newLevel = calculateLevel(clans, newValue);
 
+		// give the players in the clan a cut
+		int clanXPToAdd = newValue - oldValue;
+		int playerXPToAdd = (int)Math.floor((double)clanXPToAdd * clans.getConfig().getDouble("leveling.player-xp-mul"));
+		for (ClanPlayerData playerData : getPlayersInClan(name)) {
+			int playerXP = getPlayerExperience(playerData.offlinePlayer.getUniqueId()) + playerXPToAdd;
+			setPlayerExperience(playerData.offlinePlayer.getUniqueId(), playerXP);
+		}
+
 		for (int curLevel = oldLevel + 1; curLevel <= newLevel; curLevel++) {
 			handleLevelUp(clans, name, curLevel);
 		}
@@ -417,10 +426,10 @@ public class DatabaseConnection {
             return new StorageSlot(title, DyeColor.valueOf(color), new ArrayList<>(Arrays.asList(ItemStack.deserializeItemsFromBytes(bytes))));
         }
 
-        static String createEmptyContainerString(int numRows) {
+        static String createEmptyContainerString(int numSlots) {
             List<ItemStack> itemStacks = new ArrayList<>();
 
-            for (int i = 0; i <= numRows*9; i++) {
+            for (int i = 0; i <= numSlots; i++) {
                 itemStacks.add(ItemStack.empty());
             }
 
@@ -438,7 +447,7 @@ public class DatabaseConnection {
                 while (results.next()) {
                     String data = results.getString("data");
                     if (data == null) {
-                        data = StorageSlot.createEmptyContainerString(6);
+                        data = StorageSlot.createEmptyContainerString(6*9);
                     }
 
                     storageList.add(StorageSlot.fromItemStackData(
@@ -462,7 +471,7 @@ public class DatabaseConnection {
             try (ResultSet results = stmt.executeQuery()) {
                 String data = results.getString("data");
                 if (data == null) {
-                    data = StorageSlot.createEmptyContainerString(6);
+                    data = StorageSlot.createEmptyContainerString(6*9);
                 }
                 return StorageSlot.fromItemStackData(
                         results.getString("storage_name"),
@@ -528,6 +537,74 @@ public class DatabaseConnection {
             throw new RuntimeException(e);
         }
     }
+
+	public List<String> getClansWithItemsInFurnace() {
+		try {
+			try (ResultSet results = connection.prepareStatement(
+				"SELECT name FROM clans WHERE furnace_data IS NOT null"
+			).executeQuery()) {
+				List<String> resultList = new ArrayList<>();
+				while (results.next()) {
+					resultList.add(results.getString("name"));
+				}
+				return resultList;
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<ItemStack> getFurnaceFromClan(String clan) {
+		try {
+			PreparedStatement stmt = connection.prepareStatement(
+				"SELECT furnace_data FROM clans WHERE name=?"
+			);
+			stmt.setString(1, clan); // sql index starts from 1
+			try (ResultSet results = stmt.executeQuery()) {
+				byte[] bytes = results.getBytes("furnace_data");
+				if (bytes == null) {
+					return null;
+				}
+				return new ArrayList<>(Arrays.asList(ItemStack.deserializeItemsFromBytes(bytes)));
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	// use ItemStack.empty() to set air
+	public void setItemInClanFurnace(String clan, ItemStack itemStack, int slotID) {
+		try {
+			List<ItemStack> furnaceItems = getFurnaceFromClan(clan);
+
+			if (furnaceItems == null) {
+				furnaceItems = new ArrayList<>();
+
+				for (int i = 0; i <= 6*9; i++) { // use full dub chest in case people make the furnace bigger in gui yml
+					furnaceItems.add(ItemStack.empty());
+				}
+			}
+
+			furnaceItems.set(slotID, itemStack);
+
+			boolean isFurnaceEmpty = true;
+			for (ItemStack item : furnaceItems) {
+				if (!item.isEmpty()) {
+					isFurnaceEmpty = false;
+					break;
+				}
+			}
+
+			PreparedStatement stmt = connection.prepareStatement(
+				"UPDATE clans SET furnace_data=? WHERE name=?"
+			);
+			stmt.setBytes(1, isFurnaceEmpty ? null : ItemStack.serializeItemsAsBytes(furnaceItems));
+			stmt.setString(2, clan);
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
     /*-----------------------------------
      *  Players
@@ -689,7 +766,7 @@ public class DatabaseConnection {
     }
 
     /*-----------------------------------
-     *  Furnace
+     *  Furnace Items
      -----------------------------------*/
 
 	public static class FurnaceItem {

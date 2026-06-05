@@ -16,7 +16,12 @@ public class FurnaceCommand extends BaseCommand {
         root.then(Commands.literal("furnace")
             .executes(ctx -> {
 				String clanName = clans.databaseConnection.getPlayerClan(ctx.getSource().getExecutor().getUniqueId());
-                MenuManager.open(ctx.getSource().getExecutor(), new FurnaceMenu(clans, clanName));
+
+				if (FurnaceMenu.furnaceMenuOpenedForClan.contains(clanName)) {
+					clans.messageInChat(ctx.getSource().getExecutor(), "furnace.wait-for-other-player", null);
+				} else {
+					MenuManager.open(ctx.getSource().getExecutor(), new FurnaceMenu(clans, clanName));
+				}
 
                 return Command.SINGLE_SUCCESS;
             }).requires(sender -> {

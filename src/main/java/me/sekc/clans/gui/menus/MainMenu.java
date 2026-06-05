@@ -12,10 +12,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class MainMenu extends BaseMenu {
-    public MainMenu(Clans clans) {
+	public MainMenu(Clans clans) {
         super(clans);
     }
 
@@ -65,13 +67,19 @@ public class MainMenu extends BaseMenu {
 			String clanName = clans.databaseConnection.getPlayerClan(e.getWhoClicked().getUniqueId());
 
 			if (clickedItem.id.equals("furnace")) {
-				MenuManager.open(e.getWhoClicked(), new FurnaceMenu(clans, clanName));
+				if (FurnaceMenu.furnaceMenuOpenedForClan.contains(clanName)) {
+					clans.messageInChat(e.getWhoClicked(), "furnace.wait-for-other-player", null);
+				} else {
+					MenuManager.open(e.getWhoClicked(), new FurnaceMenu(clans, clanName));
+				}
 			} else if (clickedItem.id.equals("storage")) {
 				MenuManager.open(e.getWhoClicked(), new StorageMenu(clans, clanName));
 			} else if (clickedItem.id.equals("leaderboard")) {
 				MenuManager.open(e.getWhoClicked(), new LeaderboardMenu(clans));
+			} else if (clickedItem.id.equals("warps")) {
+				clans.messageInChat(e.getWhoClicked(), "todo", null);
 			} else if (clickedItem.id.equals("leave")) {
-                MenuManager.open(e.getWhoClicked(), new LeaveMenu(clans));
+				MenuManager.open(e.getWhoClicked(), new LeaveMenu(clans));
             } else if (clickedItem.id.equals("invite")) {
                 clans.messageInChat(e.getWhoClicked(), "invite.awaiting-input", null);
 

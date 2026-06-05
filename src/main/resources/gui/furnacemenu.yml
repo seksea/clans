@@ -11,7 +11,7 @@ title: "
 layout: |
   . D _ _ _ _ _ . .
   . I _ _ _ _ _ . .
-  . . . . . . F . .
+  . . . . . . . . .
   . . . . . . . . .
   . . . . . . . . .
   B . . . . . . . .
@@ -32,11 +32,6 @@ items:
       <grey>View which items are allowed to be</grey>
       <grey>burned in the furnace, and how</grey>
       <grey>much XP they yield.</grey>
-  F:
-    id: "burn"
-    material: FLINT_AND_STEEL
-    name: "<bold><red>Burn</red></bold>"
-    lore: "<grey>blah blah blah</grey>" # lore is set by FurnaceMenu to show how much XP it would yield on burn (see messages.yml furnace.burnlore to change msg)
   B:
     id: "mainmenu"
     material: BARRIER

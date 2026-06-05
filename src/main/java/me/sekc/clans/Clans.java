@@ -9,6 +9,10 @@ import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.sekc.clans.commands.CommandManager;
+import me.sekc.clans.gui.menus.FurnaceMenu;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -18,12 +22,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -64,6 +71,49 @@ public final class Clans extends JavaPlugin {
         CommandManager.registerCommands(this);
 
         getServer().getPluginManager().registerEvents(new EventListener(this), this);
+
+		// Furnace burning task
+		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
+			List<String> clanList = databaseConnection.getClansWithItemsInFurnace();
+			for (String clanName : clanList) {
+				if (FurnaceMenu.furnaceMenuOpenedForClan.contains(clanName)) {
+					continue; // Don't burn items when the furnace menu is open
+				}
+				List<ItemStack> itemsInFurnace = databaseConnection.getFurnaceFromClan(clanName);
+				// take the first item from the furnace and burn it for xp
+
+				int index = 0;
+				for (ItemStack item : itemsInFurnace) {
+					if (item.isEmpty()) {
+						index++;
+						continue;
+					}
+
+					DatabaseConnection.FurnaceItem fItem = databaseConnection.getSimilarItemFromFurnaceItemList(item);
+
+					int clanXPToAdd = fItem.xp;
+					int newClanXP = databaseConnection.getClanExperience(clanName) + clanXPToAdd;
+
+					databaseConnection.setClanExperience(this, clanName, newClanXP);
+
+					List<Player> onlinePlayersInClan = new ArrayList<>();
+					for (DatabaseConnection.ClanPlayerData playerData : databaseConnection.getPlayersInClan(clanName)) {
+						Player player = playerData.offlinePlayer.getPlayer();
+						if (player != null) onlinePlayersInClan.add(player);
+					}
+
+					Audience clanAudience = Audience.audience(onlinePlayersInClan);
+					clanAudience.playSound(Sound.sound(Key.key("entity.experience_orb.pickup"), Sound.Source.MUSIC, 1f, 1f));
+
+					// remove 1
+					item.setAmount(item.getAmount()-1);
+
+					databaseConnection.setItemInClanFurnace(clanName, item, index);
+
+					break; // only burn from 1 stack
+				}
+			}
+		}, 200, getConfig().getInt("furnace.delayTicks"));
     }
 
     @Override

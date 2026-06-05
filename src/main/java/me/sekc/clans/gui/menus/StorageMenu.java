@@ -74,9 +74,4 @@ public class StorageMenu extends BaseMenu {
             }
         }
     }
-
-    @Override
-    public void handleClose(InventoryCloseEvent e) {
-        storageContentsMenuOpenedForClan.remove(clanName);
-    }
 }
