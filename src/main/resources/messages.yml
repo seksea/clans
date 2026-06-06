@@ -28,6 +28,10 @@ furnace:
     <grey>This item changes every week.</grey>
     <grey>it has a %multiplier%x multiplier.</grey>
     <grey>%item_of_day% (%num_xp_normal%XP * %multiplier% = <green>%num_xp%XP/item</green>)</grey>
+  infolore: |
+    <grey>Leave items here and they will burn and level</grey>
+    <grey>up your clan.</grey>
+    <grey>It will take <white>%time_to_burn_all%</white> to burn a full furnace.</grey>
   wait-for-other-player: "Cannot access the furnace right now as another player in the clan is accessing it."
   burned-items: "Items were burned for <bold><green>%num_clan_xp% Clan XP</green></bold> and <bold><green>%num_player_xp% Player XP</green></bold>."
   item-list:
@@ -35,6 +39,7 @@ furnace:
       <grey>Burn this item for:</grey>
       <grey> - <green>%num_xp% Clan XP</green></grey>
       <grey> - <green>%num_player_xp% Player XP</green></grey>
+  bossbar-title: "Clan Furnace Lvl <yellow>%clan_level%</yellow>"
 info:
   info-message: |
     <green>===================================</green>

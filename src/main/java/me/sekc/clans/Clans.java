@@ -11,6 +11,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.sekc.clans.commands.CommandManager;
 import me.sekc.clans.gui.menus.FurnaceMenu;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -104,6 +105,21 @@ public final class Clans extends JavaPlugin {
 
 					Audience clanAudience = Audience.audience(onlinePlayersInClan);
 					clanAudience.playSound(Sound.sound(Key.key("entity.experience_orb.pickup"), Sound.Source.MUSIC, 1f, 1f));
+
+					Component bossbarTitle = MiniMessage.miniMessage().deserialize(
+						getMessageWithPlaceholders(null, "furnace.bossbar-title", Map.ofEntries(
+							Map.entry("%clan_name%", clanName),
+							Map.entry("%clan_level%", String.valueOf(databaseConnection.calculateLevel(this, newClanXP))),
+							Map.entry("%clan_xp%", String.valueOf(newClanXP))
+						))
+					);
+
+					BossBar bossBar = BossBar.bossBar(bossbarTitle, (float)databaseConnection.calculateLevelRatio(this, newClanXP), BossBar.Color.RED, BossBar.Overlay.NOTCHED_20);
+					clanAudience.showBossBar(bossBar);
+
+					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, () -> {
+						clanAudience.hideBossBar(bossBar); // Hide it (TODO: make this boss bar stick around?)
+					}, getConfig().getInt("furnace.delayTicks"));
 
 					// remove 1
 					item.setAmount(item.getAmount()-1);

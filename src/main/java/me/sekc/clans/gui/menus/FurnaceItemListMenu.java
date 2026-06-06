@@ -96,7 +96,12 @@ public class FurnaceItemListMenu extends BaseMenu {
 				}
 			} else if (clickedLayoutItem.id.equals("back")) {
 				String playerClan = clans.databaseConnection.getPlayerClan(e.getWhoClicked().getUniqueId());
-				MenuManager.open(e.getWhoClicked(), new FurnaceMenu(clans, playerClan));
+
+				if (FurnaceMenu.furnaceMenuOpenedForClan.contains(playerClan)) {
+					clans.messageInChat(e.getWhoClicked(), "furnace.wait-for-other-player", null);
+				} else {
+					MenuManager.open(e.getWhoClicked(), new FurnaceMenu(clans, playerClan));
+				}
 			}
         }
     }

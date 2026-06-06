@@ -317,6 +317,16 @@ public class DatabaseConnection {
 		throw new RuntimeException("invalid leveling.div or leveling.pow in config.yml");
 	}
 
+	public double calculateLevelRatio(Clans clans, int experience) { // How far through the current level are we?
+		double div = clans.getConfig().getDouble("leveling.div");
+		double pow = clans.getConfig().getDouble("leveling.pow");
+		if (div != 0 && pow != 0) {
+			double level = Math.pow((double)experience/div, pow);
+			return level - Math.floor(level);
+		}
+		throw new RuntimeException("invalid leveling.div or leveling.pow in config.yml");
+	}
+
 	public int calculateNumStorageSlotsForClan(Clans clans, int level) {
 		double div = clans.getConfig().getDouble("storage-awards.div");
 		double pow = clans.getConfig().getDouble("storage-awards.pow");

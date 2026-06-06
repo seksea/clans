@@ -4,6 +4,7 @@ import me.sekc.clans.Clans;
 import me.sekc.clans.DatabaseConnection;
 import me.sekc.clans.gui.BaseMenu;
 import me.sekc.clans.gui.MenuManager;
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,6 +13,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.time.Duration;
 import java.util.*;
 
 public class FurnaceMenu extends BaseMenu {
@@ -56,6 +58,14 @@ public class FurnaceMenu extends BaseMenu {
 							Map.entry("%num_xp_normal%", Integer.toString(2)),
 							Map.entry("%multiplier%", Integer.toString(10)), // fake data for now TODO
 							Map.entry("%num_xp%", Integer.toString(20))
+						));
+
+						gui.setItem(curIndex, item.getItemStack());
+					}
+					if (item.id.equals("info")) {
+						int ticksToBurnAll = numCustomSlots * 64 * clans.getConfig().getInt("furnace.delayTicks");
+						item.lore = clans.getMessageWithPlaceholders(player.getUniqueId(), "furnace.infolore", Map.ofEntries(
+							Map.entry("%time_to_burn_all%", Duration.ofSeconds((long)((float)ticksToBurnAll / Bukkit.getServer().getServerTickManager().getTickRate())).toString().substring(2).toLowerCase())
 						));
 
 						gui.setItem(curIndex, item.getItemStack());

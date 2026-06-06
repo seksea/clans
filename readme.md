@@ -1,7 +1,7 @@
 <img src="docs/logo.png" alt="Alt text" width="100%" style="image-rendering: pixelated;">
 
 # The ultimate clans plugin
-[\[preview video\]](https://www.youtube.com/watch?v=V3XsH0YFaS8)
+[\[preview video\]](https://youtu.be/AA58mq7kdhI)
 
 [spigot page (download jar here)](https://www.spigotmc.org/resources/clans.135746/)
 
@@ -12,7 +12,8 @@
 Let players group up to form clans and fight for the top of the leaderboard.
 
 ## Features
- - Clans can level up by burning items of value in the "furnace" GUI
+ - Clans can level up by burning items of value in the "furnace"
+ - The furnace burns items slowly in the background (even when no-one is online!)
  - Progress stored in SQLite database
  - Highly configurable via yaml
    - Edit GUI layouts [example](src/main/resources/gui/mainmenu.yml)
@@ -35,7 +36,3 @@ Let players group up to form clans and fight for the top of the leaderboard.
 
 1. Drag the plugin .jar file to your servers' `plugins/` directory
 2. (Optional) If you would like to have the custom GUI background pngs, then you must merge the `resourcepack` folder into your servers resource pack)
-
-## Ideas
-
- - Make the furnace take an item at an interval and be shared between clan members, so it's more like a real furnace slowly burning away
