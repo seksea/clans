@@ -9,3 +9,26 @@ load: POSTWORLD
 softdepend: [ PlaceholderAPI ]
 
 authors: [ sekc ]
+
+permissions:
+  clans.admin:
+    description: Allows admins to configure clans.
+    default: op
+  clans.gui:
+    description: Allows player to open the clans gui.
+    default: true
+  clans.delete:
+    description: Allows player to delete a clan they own.
+    default: true
+  clans.info:
+    description: Allows player to run /clan info <clanName>
+    default: true
+  clans.invite:
+    description: Allows player to invite another player to clan.
+    default: true
+  clans.leave:
+    description: Allows player to leave the clan they are in.
+    default: true
+  clans.new:
+    description: Allows player to create a new clan.
+    default: true
