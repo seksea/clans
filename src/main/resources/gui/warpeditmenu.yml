@@ -1,0 +1,41 @@
+# The title contains these funky characters as the custom resource pack defines them as pngs,
+# change this to a normal title if you are not using a custom resource pack.
+#   = backspace (move text cursor backwards)
+#   = storage menu png
+title: ""
+
+# The layout of the UI
+#  a-Z = custom items that you can customise below (cannot be taken)
+#  . = empty space that are completely locked, cannot have items dragged in
+#  _ = custom area, this is used for things such as the storagemenu, lets the menu decide how to handle this area
+layout: |
+  . . . . . . . . .
+  . . . . . . . . .
+  . . . . W . . . .
+  . . . R . C . . .
+  . . . . . . . . .
+  B . . . . . . . .
+
+# Define the items to fill the layout with, the only thing that matters here is the "id", as that controls what
+# the button does, so don't change that, everything else is cosmetic and can be customised.
+items:
+  B:
+    id: "back"
+    material: BARRIER
+    name: "<bold>Back</bold>"
+    lore: "<grey>Go back to view all storages.</grey>"
+  R:
+    id: "rename"
+    material: NAME_TAG
+    name: "<bold>Rename</bold>"
+    lore: "<grey>Rename this warp.</grey>"
+  C:
+    id: "color"
+    material: WHITE_WOOL
+    name: "<bold>Change Color</bold>"
+    lore: "<grey>Change the color of this warp.</grey>"
+  W:
+    id: "setpos"
+    material: COMPASS
+    name: "<bold>Set Position</bold>"
+    lore: "<grey>Set the position of this warp to your current positon.</grey>"

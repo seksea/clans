@@ -11,6 +11,10 @@
 
 Let players group up to form clans and fight for the top of the leaderboard.
 
+You can see this plugin in action on my server:
+
+## [clans.bounceme.net](https://modrinth.com/server/clans_server)
+
 ## Features
  - Clans can level up by burning items of value in the "furnace"
  - The furnace burns items slowly in the background (even when no-one is online!)
@@ -29,8 +33,8 @@ Let players group up to form clans and fight for the top of the leaderboard.
 
 ![img.png](docs/mainmenu.png)
 
-## Dependencies 
- - PlaceholderAPI (Not required, but the plugin does support placeholderAPI placeholders in the messages.yml & gui yml files if installed)
+## Dependencies
+- PlaceholderAPI (Not required, but the plugin does support placeholderAPI placeholders in the messages.yml & gui yml files if installed, and also will add %clans_clan_name%, %clans_clan_level%, and %clans_player_level% placeholders)
 
 ## Setup
 
