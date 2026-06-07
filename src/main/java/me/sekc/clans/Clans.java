@@ -41,14 +41,10 @@ public final class Clans extends JavaPlugin {
 
     String chatMessageFormat;
 	boolean placeholderAPIInstalled = true;
+	ClansPlaceholderExpansion placeholderExpansion;
 
     @Override
     public void onEnable() {
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
-            warn("Could not find PlaceholderAPI, it will not be used.");
-			placeholderAPIInstalled = false;
-        }
-
         log("\n" +
                 "   .oooooo.   oooo                                 \n" +
                 "  d8P'  `Y8b  `888                                 \n" +
@@ -68,6 +64,15 @@ public final class Clans extends JavaPlugin {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
+			warn("Could not find PlaceholderAPI, it will not be used.");
+			placeholderAPIInstalled = false;
+		} else {
+			log("Creating PlaceholderAPI expansion...");
+			placeholderExpansion = new ClansPlaceholderExpansion(this);
+			placeholderExpansion.register();
+		}
 
         CommandManager.registerCommands(this);
 
