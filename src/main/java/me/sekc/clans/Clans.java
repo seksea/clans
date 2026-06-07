@@ -59,6 +59,13 @@ public final class Clans extends JavaPlugin {
 
 		reloadConfigFiles();
 
+		// Initialise bStats
+		if (getConfig().getBoolean("metrics")) {
+			// You can find the plugin id of your plugins on
+			// the page https://bstats.org/what-is-my-plugin-id
+			new Metrics(this, 31862);
+		}
+
         try {
             databaseConnection = new DatabaseConnection(getConfig().getString("database.filepath"));
         } catch (Exception e) {

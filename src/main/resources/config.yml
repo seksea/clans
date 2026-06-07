@@ -9,6 +9,9 @@
 #                                               sekc
 #  ===================================================
 
+# bStats metrics
+metrics: true
+
 # When the plugin responds in chat, how should the message look?
 clan-message-format: "<grey>[</grey><gradient:#bb88d0:#aa88ff><b>clans</b></gradient><grey>]</grey> "
 
