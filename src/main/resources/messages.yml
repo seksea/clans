@@ -96,6 +96,19 @@ storage:
   couldnt-recolor: "Failed to recolor the storage, perhaps you misspelled the color?"
   wait-for-other-player: "Cannot access storage right now as another player in the clan is accessing it."
   award-storage: "Your clan has leveled up so you have earned another shared storage slot! Check it out with <hover:show_text:\"Click me!\"><click:run_command:clan storage><b>/clan storage</b></click></hover>."
+warps:
+  awaiting-name-input: "Type the new name of your warp in chat (or \"cancel\"):"
+  renamed: "Successfully renamed the warp to <b>%new_name%</b>."
+  awaiting-color-input: "Type the name of the new color for your warp in chat:"
+  recolored: "Successfully recolored the warp to <b>%new_color%</b>."
+  couldnt-recolor: "Failed to recolor the warp, perhaps you misspelled the color?"
+  setwarp: "Successfully set the warp position to <b>%pos_x%, %pos_y%, %pos_z%</b>."
+  failed: "Failed to teleport, the warp is not set, right click the warp to edit it and set a new position."
+  cant-edit: "Only the owner can edit a clan warp."
+  warp-lore: |
+    Left click to warp
+    Right click to edit
+  award-warp: "Your clan has leveled up so you have earned another warp slot! Check it out with <hover:show_text:\"Click me!\"><click:run_command:clan warps><b>/clan warps</b></click></hover>."
 main-menu:
   clan-info: |
     <white>Info for clan <b>%clan_name%</b>:</white>

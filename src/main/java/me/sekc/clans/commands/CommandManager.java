@@ -24,7 +24,8 @@ public class CommandManager {
         LeaveCommand.register(clans, clanRoot);
         ManageCommand.register(clans, clanRoot);
         NewCommand.register(clans, clanRoot);
-        StorageCommand.register(clans, clanRoot);
+		StorageCommand.register(clans, clanRoot);
+		WarpCommand.register(clans, clanRoot);
         LiteralCommandNode<CommandSourceStack> buildClanRoot = clanRoot.build();
 
         clans.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {

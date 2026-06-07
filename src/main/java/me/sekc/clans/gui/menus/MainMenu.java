@@ -77,7 +77,7 @@ public class MainMenu extends BaseMenu {
 			} else if (clickedItem.id.equals("leaderboard")) {
 				MenuManager.open(e.getWhoClicked(), new LeaderboardMenu(clans));
 			} else if (clickedItem.id.equals("warps")) {
-				clans.messageInChat(e.getWhoClicked(), "todo", null);
+				MenuManager.open(e.getWhoClicked(), new WarpMenu(clans, clanName));
 			} else if (clickedItem.id.equals("leave")) {
 				MenuManager.open(e.getWhoClicked(), new LeaveMenu(clans));
             } else if (clickedItem.id.equals("invite")) {

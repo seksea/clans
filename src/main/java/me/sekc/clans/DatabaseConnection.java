@@ -2,9 +2,11 @@ package me.sekc.clans;
 
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.joml.Vector3i;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.sql.*;
@@ -25,6 +27,16 @@ public class DatabaseConnection {
 		+ "   storage_name  VARCHAR(32) NOT NULL DEFAULT 'Unnamed',"
 		+ "   color         VARCHAR(32) NOT NULL DEFAULT 'WHITE',"
 		+ "   data          TEXT" // Base64 encoded NBT data
+		+ ")";
+
+	String clanWarpSchema = " ("
+		+ "   id            INTEGER PRIMARY KEY,"
+		+ "   warp_name     VARCHAR(32) NOT NULL DEFAULT 'Unnamed',"
+		+ "   color         VARCHAR(32) NOT NULL DEFAULT 'WHITE',"
+		+ "   world_name    VARCHAR(64) NOT NULL DEFAULT '',"
+		+ "   position_x    INTEGER NOT NULL DEFAULT 0,"
+		+ "   position_y    INTEGER NOT NULL DEFAULT 0,"
+		+ "   position_z    INTEGER NOT NULL DEFAULT 0"
 		+ ")";
 
     Connection connection;
@@ -209,11 +221,16 @@ public class DatabaseConnection {
             );
 
             // Create table to store clan storage
-            connection.createStatement().executeUpdate(
-                    "CREATE TABLE IF NOT EXISTS " + sanitiseString("clan_" + name + "_storage") + clanStorageSchema
-            );
+			connection.createStatement().executeUpdate(
+				"CREATE TABLE IF NOT EXISTS " + sanitiseString("clan_" + name + "_storage") + clanStorageSchema
+			);
 
-            addStorageToClan(name); // Add a single storage slot to the clan to start with
+			connection.createStatement().executeUpdate(
+				"CREATE TABLE IF NOT EXISTS " + sanitiseString("clan_" + name + "_warps") + clanWarpSchema
+			);
+
+			addStorageToClan(name); // Add a single storage slot to the clan to start with
+			addWarpToClan(name); // Add a single warp slot to the clan to start with
 
             addPlayerToClan(name, ownerUUID); // add the owner as a member
         } catch (SQLException e) {
@@ -235,10 +252,15 @@ public class DatabaseConnection {
                     "DROP TABLE " + sanitiseString("clan_" + name + "_members")
             );
 
-            // Delete clan storage table
-            connection.createStatement().executeUpdate(
-                    "DROP TABLE " + sanitiseString("clan_" + name + "_storage")
-            );
+			// Delete clan storage table
+			connection.createStatement().executeUpdate(
+				"DROP TABLE " + sanitiseString("clan_" + name + "_storage")
+			);
+
+			// Delete clan warp table
+			connection.createStatement().executeUpdate(
+				"DROP TABLE " + sanitiseString("clan_" + name + "_warps")
+			);
 
             // Remove all players' clan
             PreparedStatement removeClanFromPlayersStmt = connection.prepareStatement(
@@ -336,11 +358,17 @@ public class DatabaseConnection {
 		throw new RuntimeException("invalid storage-awards.div or storage-awards.pow in config.yml");
 	}
 
+	public int calculateNumWarpSlotsForClan(Clans clans, int level) {
+		double div = clans.getConfig().getDouble("warp-awards.div");
+		double pow = clans.getConfig().getDouble("warp-awards.pow");
+		if (div != 0 && pow != 0) {
+			return (int)Math.floor(Math.pow((double)level/div, pow));
+		}
+		throw new RuntimeException("invalid warp-awards.div or warp-awards.pow in config.yml");
+	}
+
 	// needs to be called for every level gained!! cannot jump levels, beware! see clanExperienceUpdated
 	public void handleLevelUp(Clans clans, String name, int newLevel) {
-		int oldNumStorage = calculateNumStorageSlotsForClan(clans, newLevel-1);
-		int newNumStorage = calculateNumStorageSlotsForClan(clans, newLevel);
-
 		// Send message to all online members of the clan
 		for (ClanPlayerData playerData : getPlayersInClan(name)) {
 			Player player = playerData.offlinePlayer.getPlayer();
@@ -351,6 +379,9 @@ public class DatabaseConnection {
 				Map.entry("%new_level%", String.valueOf(newLevel))
 			));
 		}
+
+		int oldNumStorage = calculateNumStorageSlotsForClan(clans, newLevel-1);
+		int newNumStorage = calculateNumStorageSlotsForClan(clans, newLevel);
 
 		// Add new storage (this will basically always just add one)
 		for (int curNumStorage = oldNumStorage; newNumStorage > curNumStorage; curNumStorage++) {
@@ -363,6 +394,23 @@ public class DatabaseConnection {
 					continue;
 
 				clans.messageInChat(player, "storage.award-storage", null);
+			}
+		}
+
+		int oldNumWarps = calculateNumWarpSlotsForClan(clans, newLevel-1);
+		int newNumWarps = calculateNumWarpSlotsForClan(clans, newLevel);
+
+		// Add new storage (this will basically always just add one)
+		for (int curNumWarps = oldNumWarps; newNumWarps > curNumWarps; curNumWarps++) {
+			addWarpToClan(name);
+
+			// Send message to all online members of the clan
+			for (ClanPlayerData playerData : getPlayersInClan(name)) {
+				Player player = playerData.offlinePlayer.getPlayer();
+				if (player == null)
+					continue;
+
+				clans.messageInChat(player, "warps.award-warp", null);
 			}
 		}
 	}
@@ -548,6 +596,127 @@ public class DatabaseConnection {
         }
     }
 
+	/*
+		WARPS
+
+	 */
+	public static class WarpSlot {
+		public String title;
+		public DyeColor color;
+		public Location position;
+
+		WarpSlot(String title, DyeColor color, Location position) {
+			this.title = title;
+			this.color = color;
+			this.position = position;
+		}
+	}
+	public List<WarpSlot> getWarpListFromClan(String clan) {
+		try {
+			try (ResultSet results = connection.createStatement().executeQuery(
+				"SELECT warp_name, color, world_name, position_x, position_y, position_z FROM " + sanitiseString("clan_" + clan + "_warps")
+			)) {
+
+				List<WarpSlot> warpList = new ArrayList<>();
+				while (results.next()) {
+					WarpSlot warpSlot = new WarpSlot(
+						results.getString("warp_name"),
+						DyeColor.valueOf(results.getString("color")),
+						new Location(
+							Bukkit.getWorld(results.getString("world_name")),
+							results.getInt("position_x"),
+							results.getInt("position_y"),
+							results.getInt("position_z")
+						)
+					);
+
+					warpList.add(warpSlot);
+				}
+				return warpList;
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public WarpSlot getWarpFromClan(String clan, int index) {
+		try {
+			PreparedStatement stmt = connection.prepareStatement("SELECT warp_name, color, world_name, position_x, position_y, position_z FROM " + sanitiseString("clan_" + clan + "_warps") + " WHERE id=?");
+			stmt.setInt(1, index+1);
+			try (ResultSet results = stmt.executeQuery()) {
+				return new WarpSlot(
+					results.getString("warp_name"),
+					DyeColor.valueOf(results.getString("color")),
+					new Location(
+						Bukkit.getWorld(results.getString("world_name")),
+						results.getInt("position_x"),
+						results.getInt("position_y"),
+						results.getInt("position_z")
+					)
+				);
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void addWarpToClan(String clan) {
+		try {
+			PreparedStatement stmt = connection.prepareStatement(
+				"INSERT INTO " + sanitiseString("clan_" + clan + "_warps") + " DEFAULT VALUES"
+			);
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	// use ItemStack.empty() to set air
+	public void setWarpPosition(String clan, int index, Location newPosition) {
+		try {
+			PreparedStatement stmt = connection.prepareStatement(
+				"UPDATE " + sanitiseString("clan_" + clan + "_warps") + " SET position_x=?, position_y=?, position_z=?, world_name=? WHERE id=?"
+			);
+			stmt.setInt(1, newPosition.getBlockX());
+			stmt.setInt(2, newPosition.getBlockY());
+			stmt.setInt(3, newPosition.getBlockZ());
+			stmt.setString(4, newPosition.getWorld().getName());
+			stmt.setInt(5, index+1);
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void editWarpName(String clan, int index, String newName) {
+		try {
+			PreparedStatement stmt = connection.prepareStatement(
+				"UPDATE " + sanitiseString("clan_" + clan + "_warps") + " SET warp_name=? WHERE id=?"
+			);
+			stmt.setString(1, newName);
+			stmt.setInt(2, index+1); // sql index starts from 1
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void editWarpColor(String clan, int index, DyeColor newColor) {
+		try {
+			PreparedStatement stmt = connection.prepareStatement(
+				"UPDATE " + sanitiseString("clan_" + clan + "_warps") + " SET color=? WHERE id=?"
+			);
+			stmt.setString(1, newColor.name());
+			stmt.setInt(2, index+1); // sql index starts from 1
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/*
+			FURNACE
+	 */
 	public List<String> getClansWithItemsInFurnace() {
 		try {
 			try (ResultSet results = connection.prepareStatement(

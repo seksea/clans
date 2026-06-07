@@ -10,7 +10,7 @@
 #  ===================================================
 
 # When the plugin responds in chat, how should the message look?
-clan-message-format: "<grey>[</grey><gradient:#bb88d0:#aa88ff>clans</gradient><grey>]</grey> "
+clan-message-format: "<grey>[</grey><gradient:#bb88d0:#aa88ff><b>clans</b></gradient><grey>]</grey> "
 
 database:
   # The path to the database (leave default if you want SQLite (no setup required) local database,
@@ -28,6 +28,12 @@ furnace:
   delayTicks: 120 # How many ticks should it take to burn 1 item?
 
 storage-awards:
+  # How the level is calculated, it is calculated by the formula:
+  #   level = (experience/div)^pow
+  div: 10 # how many levels required for first award
+  pow: 0.6 # lower = num levels required increases more each time, should not be set higher than 1
+
+warp-awards:
   # How the level is calculated, it is calculated by the formula:
   #   level = (experience/div)^pow
   div: 10 # how many levels required for first award
