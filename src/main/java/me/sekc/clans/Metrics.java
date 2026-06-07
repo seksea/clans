@@ -1,3 +1,5 @@
+package me.sekc.clans;
+
 /*
  * This Metrics class was auto-generated and can be copied into your project if you are
  * not using a build tool like Gradle or Maven for dependency management.
@@ -12,7 +14,6 @@
  *
  * Violations will result in a ban of your plugin and account from bStats.
  */
-package me.sekc.clans;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
