@@ -1,10 +1,8 @@
 package me.sekc.clans;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
-import io.papermc.paper.event.player.ChatEvent;
 import me.sekc.clans.gui.MenuManager;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -45,7 +43,7 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
-    public void OnPlayer(AsyncChatEvent e) {
+    public void OnPlayerChat(AsyncChatEvent e) {
         MenuManager.onChat(e);
     }
 }

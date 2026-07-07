@@ -1,4 +1,4 @@
-<img src="docs/logo.png" alt="Alt text" width="100%" style="image-rendering: pixelated;">
+<img src="docs/logo.png" alt="Clans Logo" width="100%" style="image-rendering: pixelated;">
 
 # The ultimate clans plugin
 [\[preview video\]](https://youtu.be/AA58mq7kdhI)
@@ -11,9 +11,7 @@
 
 Let players group up to form clans and fight for the top of the leaderboard.
 
-You can see this plugin in action on my server:
-
-## [clans.bounceme.net](https://modrinth.com/server/clans_server)
+### You can see this plugin in action on my server [clans.bounceme.net](https://modrinth.com/server/clans_server)
 
 ## Features
  - Clans can level up by burning items of value in the "furnace"

@@ -7,11 +7,13 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.helpch.at/releases")
+    maven("https://api.modrinth.com/maven")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
     compileOnly("me.clip:placeholderapi:2.12.2")
+    compileOnly("maven.modrinth:packman:0.1")
 }
 
 java {

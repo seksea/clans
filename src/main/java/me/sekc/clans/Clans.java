@@ -10,6 +10,7 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.sekc.clans.commands.CommandManager;
 import me.sekc.clans.gui.menus.FurnaceMenu;
+import me.sekc.packman.Packman;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.key.Key;
@@ -41,10 +42,12 @@ public final class Clans extends JavaPlugin {
 
     String chatMessageFormat;
 	boolean placeholderAPIInstalled = true;
+	boolean packmanInstalled = true;
 	ClansPlaceholderExpansion placeholderExpansion;
 
     @Override
     public void onEnable() {
+
         log("\n" +
                 "   .oooooo.   oooo                                 \n" +
                 "  d8P'  `Y8b  `888                                 \n" +
@@ -79,6 +82,14 @@ public final class Clans extends JavaPlugin {
 			log("Creating PlaceholderAPI expansion...");
 			placeholderExpansion = new ClansPlaceholderExpansion(this);
 			placeholderExpansion.register();
+		}
+
+
+		if (Bukkit.getPluginManager().getPlugin("Packman") == null) {
+			warn("Could not find Packman plugin, it will not be used.");
+			packmanInstalled = false;
+		} else {
+			log("Creating Packman pack...");
 		}
 
         CommandManager.registerCommands(this);
