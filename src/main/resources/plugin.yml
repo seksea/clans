@@ -6,7 +6,7 @@ main: me.sekc.clans.Clans
 api-version: '26.1.2'
 load: POSTWORLD
 
-softdepend: [ PlaceholderAPI ]
+softdepend: [ PlaceholderAPI, Packman ]
 
 authors: [ sekc ]
 

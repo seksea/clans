@@ -90,6 +90,9 @@ public final class Clans extends JavaPlugin {
 			packmanInstalled = false;
 		} else {
 			log("Creating Packman pack...");
+			saveResource("clans_pack.zip", false);
+			Packman.setPack("clans_pack", new File(getDataFolder(), "clans_pack.zip"));
+
 		}
 
         CommandManager.registerCommands(this);

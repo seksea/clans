@@ -1,8 +1,6 @@
-# The title contains these funky characters as the custom resource pack defines them as pngs,
-# change this to a normal title if you are not using a custom resource pack.
-#   = backspace (move text cursor backwards)
-#   = storage menu png
-title: ""
+# The title contains packman placeholders.
+# change this to a normal title if you are not using packman.
+title: "[pmshift:-32][pmshift:-16][pmglyph:clans_pack:storage_menu]"
 
 # The layout of the UI
 #  a-Z = custom items that you can customise below (cannot be taken)
