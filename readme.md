@@ -21,7 +21,7 @@ Let players group up to form clans and fight for the top of the leaderboard.
    - Edit GUI layouts [example](src/main/resources/gui/mainmenu.yml)
    - Configurable via config options in [config.yml](src/main/resources/config.yml)
    - Edit chat messages with [messages.yml](src/main/resources/messages.yml)
- - GUI (including custom gui glyphs using my [packman]() plugin)
+ - GUI (including custom gui glyphs using my [packman](https://www.spigotmc.org/resources/packman.136204/) plugin)
  - Shared clan storage (more unlocked as your clan levels up)
  - Admin commands allowing you to manage other clans & reload the yaml files
  - Clan leaderboard
